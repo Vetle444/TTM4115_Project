@@ -164,5 +164,3 @@ class UI_Component:
 
         self.app.go(startWindow="Standby")
 
-
-ui_Component = UI_Component()

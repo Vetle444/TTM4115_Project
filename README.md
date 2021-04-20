@@ -1,6 +1,13 @@
 # TTM4115_Project
 This project is a part of the course TM4115 at NTNU Spring 2021. 
 
+
+## How to start the application
+Run ```runner.py``` using the following command.
+```
+python runner.py
+```
+
 ## How to set up a venv environment (inside the project folder)
 
 For reference:
