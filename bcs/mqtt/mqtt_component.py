@@ -13,7 +13,7 @@ class MQTT_Client:
         self.prefix = "/group17/"
         self.message_count = 0
         self.ui_stm = ui_stm
-        self.message_storage = "C:/Users/erlen/PycharmProjects/TTM4115_Project/messages/"
+        self.message_storage = "./messages/"
         if not os.path.exists(os.path.dirname(self.message_storage)):
             try:
                 os.makedirs(os.path.dirname(self.message_storage))
