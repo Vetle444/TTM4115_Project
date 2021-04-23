@@ -13,7 +13,7 @@ class MQTT_Client:
         self.prefix = "/group17/"
         self.message_count = 0
         self.ui_stm = ui_stm
-        self.message_storage = "C:/Users/marti/PycharmProjects/TTM4115_Project/messages/"
+        self.message_storage = "C:/Users/erlen/PycharmProjects/TTM4115_Project/messages/"
         if not os.path.exists(os.path.dirname(self.message_storage)):
             try:
                 os.makedirs(os.path.dirname(self.message_storage))
@@ -40,9 +40,20 @@ class MQTT_Client:
     def subscribe(self, channel_name):
         self.client.subscribe(self.prefix + channel_name)
 
-    def send_message(self, channel_name, payload):
+    def send_message(self, channel_name, file):
         try:
             self.client.publish(self.prefix + channel_name, payload)
+        except Exception as e:
+            print(e)
+
+    def send_file(self, channel_name, file_location):
+        f = open(file_location, "rb")
+        audiostring = f.read()
+        f.close()
+        byteArray = bytearray(audiostring)
+
+        try:
+            self.client.publish(self.prefix + channel_name, byteArray)
         except Exception as e:
             print(e)
 
