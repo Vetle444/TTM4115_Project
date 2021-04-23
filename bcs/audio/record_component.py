@@ -17,7 +17,7 @@ class Recorder:
     Use create_stm() to create the state machine.
     Use start_recording() to start a recording.
     Use stop_recording() to stop a recording.
-'''
+    '''
 
     def __init__(self):
         self.recording = False
