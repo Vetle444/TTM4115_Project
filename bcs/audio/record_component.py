@@ -8,13 +8,24 @@ import wave
 
 
 class Recorder:
+    '''
+    This class provides audio recording. Make sure pyaudio is installed (both from pip 
+    and possible via a packet manager as well).
+
+    How to use:
+    Initiate the object.
+    Use create_stm() to create the state machine.
+    Use start_recording() to start a recording.
+    Use stop_recording() to stop a recording.
+'''
+
     def __init__(self):
         self.recording = False
         self.chunk = 1024  # Record in chunks of 1024 samples
         self.sample_format = pyaudio.paInt16  # 16 bits per sample
         self.channels = 2
         self.fs = 44100  # Record at 44100 samples per second
-        self.filename = "output.wav"
+        self.filename = "recorded_message.wav"
         self.p = pyaudio.PyAudio()
 
     def record(self):
@@ -30,12 +41,13 @@ class Recorder:
         while self.recording:
             data = stream.read(self.chunk)
             self.frames.append(data)
-        print("done recording")
+        print("recording done")
         # Stop and close the stream
         stream.stop_stream()
         stream.close()
         # Terminate the PortAudio interface
         self.p.terminate()
+        print("stream closed")
 
     def stop(self):
         print("stop")
@@ -50,7 +62,7 @@ class Recorder:
         wf.setframerate(self.fs)
         wf.writeframes(b''.join(self.frames))
         wf.close()
-        print("done")
+        print("processing done")
 
     def create_stm(self):
         t0 = {'source': 'initial', 'target': 'ready'}
@@ -75,9 +87,18 @@ class Recorder:
         print("driver stopped")
 
     def start_recording(self):
-        driver.send('start', 'stm')
+        self.driver.send('start', 'stm')
 
     def stop_recording(self):
-        driver.send('stop', 'stm')
+        self.driver.send('stop', 'stm')
 
+
+# Example code
+'''
 recorder = Recorder()
+recorder.create_stm()
+recorder.start_recording()
+time.sleep(3)
+recorder.stop_recording()
+recorder.stop_stm()
+'''
