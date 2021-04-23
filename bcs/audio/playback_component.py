@@ -10,9 +10,10 @@ import wave
         
 class Player:
     def __init__(self):
-        filename = 'file.wav'
+        self.finishedPlaying=False
         
     def play(self):
+        filename = 'recorded_message.wav'
 
         # Set chunk size of 1024 samples per data frame
         chunk = 1024  
@@ -41,10 +42,10 @@ class Player:
         # Close and terminate the stream
         stream.close()
         p.terminate()
+        self.finishedPlaying=True
 
-    def create_stm:
-        player = Player()
-        
+
+    def create_stm(self):
         t0 = {'source': 'initial', 'target': 'ready'}
         t1 = {'trigger': 'start', 'source': 'ready', 'target': 'playing'}
         t2 = {'trigger': 'done', 'source': 'playing', 'target': 'ready'}
@@ -52,17 +53,29 @@ class Player:
         s_playing = {'name': 'playing', 'do': 'play()'}
 
         stm = Machine(name='stm', transitions=[t0, t1, t2], states=[s_playing], obj=player)
-        player.stm = stm
+        self.stm = stm
 
-        driver = Driver()
-        driver.add_machine(stm)
-        driver.start()
+        self.driver = Driver()
+        self.driver.add_machine(stm)
+        self.driver.start()
 
         print("driver started")
     
-    def start_playback:
-        driver.send('start', 'stm')
+    def start_playback(self):
+        self.driver.send('start', 'stm')
     
 
-    def stop_playback:
-        driver.stop()
+    def stop_playback(self):
+        self.driver.send('stop', 'stm')
+
+    def stop_stm(self):
+        self.driver.stop()
+        print("driver stopped")
+
+
+player = Player()
+player.create_stm()
+player.start_playback()
+
+time.sleep(5)
+player.stop_stm()
