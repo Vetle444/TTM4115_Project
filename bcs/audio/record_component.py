@@ -100,5 +100,6 @@ recorder.create_stm()
 recorder.start_recording()
 time.sleep(3)
 recorder.stop_recording()
+time.sleep(2)
 recorder.stop_stm()
 '''
