@@ -37,6 +37,7 @@ pickleshare==0.7.5
 prometheus-client==0.10.1
 prompt-toolkit==3.0.18
 ptyprocess==0.7.0
+PyAudio==0.2.11
 pycparser==2.20
 Pygments==2.8.1
 pyparsing==2.4.7
@@ -51,6 +52,7 @@ testpath==0.4.4
 tornado==6.1
 traitlets==5.0.5
 typing-extensions==3.7.4.3
+Wave==0.0.2
 wcwidth==0.2.5
 webencodings==0.5.1
 widgetsnbextension==3.5.1
