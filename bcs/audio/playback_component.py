@@ -7,12 +7,21 @@ import contextlib
 import pyaudio
 import wave
 
+"""
+How to use:
+Initiate Player class
+Call create stm function
+Call start playback
+Call stop playback
+"""
+
         
 class Player:
     def __init__(self):
         self.finishedPlaying=False
         
     def play(self):
+        """Name of wav file"""
         filename = 'recorded_message.wav'
 
         # Set chunk size of 1024 samples per data frame
@@ -72,10 +81,10 @@ class Player:
         self.driver.stop()
         print("driver stopped")
 
-
+"""
+Example
 player = Player()
 player.create_stm()
 player.start_playback()
-
-time.sleep(5)
 player.stop_stm()
+"""
