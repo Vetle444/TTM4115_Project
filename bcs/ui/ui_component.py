@@ -131,9 +131,6 @@ class UI_Component:
         return None
 
     def OnSubmitChooseRecipient(self):
-        
-
-
         for i in range(len(self.selectedChannels)):
             if(self.app.getCheckBox(self.selectedChannels[i])):
                 self.selectedChannels.append(self.selectedChannels[i])
