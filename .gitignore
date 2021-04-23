@@ -1,3 +1,8 @@
+#Custom folders to exclude inproject
+/bcs/messages/*
+/bcs/audio/file.wav
+/bcs/audio/recorded_message.wav
+
 __pycache__/
 *.py[cod]
 *$py.class
