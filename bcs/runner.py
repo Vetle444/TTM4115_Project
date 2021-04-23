@@ -9,5 +9,4 @@ broker, port = "mqtt.item.ntnu.no", 1883
 
 mqtt_client.start(broker, port)
 
-mqtt_client.send_message("erlend", "Test_Message")
-mqtt_client.send_message("erlend", "Test_Message")
+mqtt_client.send_file("erlend", "C:/Users/erlen/PycharmProjects/TTM4115_Project/audio/audio.wav")
