@@ -2,6 +2,8 @@ import os
 from threading import Thread
 from .message_component import Message
 import paho.mqtt.client as mqtt
+import json
+
 
 class MQTT_Client:
     def __init__(self, user_name, ui_stm):
@@ -30,12 +32,16 @@ class MQTT_Client:
         print("on_message(): topic: {}".format(msg.topic))
         self.message_count += 1
         topic = msg.topic.split("/")[-1]
-        file_object = open(self.message_storage + topic + str(self.message_count), "wb")
+
+        # Adding ".wav" for all messages not from "channel_list"
+        file_extension = ".wav" if topic != "channel_list" else ""
+        file_object = open(self.message_storage + topic +
+                           str(self.message_count)+file_extension, "wb")
         file_object.write(msg.payload)
         file_object.close()
-        message = Message(topic, self.message_count, self.message_storage + topic + str(self.message_count))
-        #self.ui_stm.new_msg_queue_add(message)
-
+        message = Message(topic, self.message_count,
+                          self.message_storage + topic + str(self.message_count))
+        # self.ui_stm.new_msg_queue_add(message)
 
     def subscribe(self, channel_name):
         self.client.subscribe(self.prefix + channel_name)
