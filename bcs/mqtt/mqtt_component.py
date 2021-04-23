@@ -3,6 +3,8 @@ from threading import Thread
 from .message_component import Message
 import paho.mqtt.client as mqtt
 
+#TODO: add documentation
+
 class MQTT_Client:
     def __init__(self, user_name, ui_stm):
         self.count = 0
@@ -27,6 +29,7 @@ class MQTT_Client:
         #self.client.subscribe(self.prefix + "channel_list")
 
     def on_message(self, client, userdata, msg):
+        #check if channel is channel_list channel
         print("on_message(): topic: {}".format(msg.topic))
         self.message_count += 1
         topic = msg.topic.split("/")[-1]
