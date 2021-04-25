@@ -10,6 +10,7 @@ class MQTT_Client:
     Class to handle mqtt connections, wraps mqtt.client
 
     Functions:
+
     send_channel_list: - simulates server component sending channel list
                          (sends comma separated string of channel names)
     on_message:        - handles incoming messages depending on source channel:
@@ -75,7 +76,7 @@ class MQTT_Client:
     def subscribe(self, channel_name):
         self.client.subscribe(self.prefix + channel_name)
 
-    def send_message(self, channel_name, file):
+    def send_message(self, channel_name, payload):
         try:
             self.client.publish(self.prefix + channel_name, payload)
         except Exception as e:
