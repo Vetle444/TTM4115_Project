@@ -78,6 +78,7 @@ class MQTT_Client:
             message = Message(topic, self.message_count,
                               self.message_storage + topic + str(self.message_count) + file_extension)
             # self.ui_stm.new_msg_queue_add(message)
+            # add file into queue of new, unheard messages, also add into list of messages from channel
 
     def subscribe(self, channel_name):
         self.client.subscribe(self.prefix + channel_name)
