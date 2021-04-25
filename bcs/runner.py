@@ -8,5 +8,7 @@ mqtt_client = MQTT_Client("erlend", "bla")
 broker, port = "mqtt.item.ntnu.no", 1883
 
 mqtt_client.start(broker, port)
-
+mqtt_client.send_channel_list()
+mqtt_client.send_file("erlend", './audio/recorded_message.wav')
+mqtt_client.send_file("erlend", './audio/recorded_message.wav')
 mqtt_client.send_file("erlend", './audio/recorded_message.wav')
