@@ -21,6 +21,12 @@ class MQTT_Client:
     send_file:         - publishes audiofile as bytes as mqtt message on specified topic
     start:             - starts connection to specified mqtt broker and starts second thread
                          to check for incoming messages, also subscribes to topics channel_list and user_name
+
+    How to use:
+    create object, give ui stm
+    connect to broker using start()
+    have incoming messages be handled by on_message
+    or send messages via the functions
     """
 
     def __init__(self, user_name, ui_stm):
