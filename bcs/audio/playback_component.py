@@ -18,7 +18,6 @@ Call stop playback
         
 class Player:
     def __init__(self):
-        self.finishedPlaying=False
         
     def play(self, filename):
 
@@ -49,7 +48,6 @@ class Player:
         # Close and terminate the stream
         stream.close()
         p.terminate()
-        self.finishedPlaying=True
 
 
     def create_stm(self):
@@ -84,5 +82,4 @@ class Player:
 player = Player()
 player.create_stm()
 player.start_playback()
-player.stop_stm()
 """

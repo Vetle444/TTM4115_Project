@@ -2,8 +2,11 @@ from stmpy import Machine, Driver
 
 class StateMachine_Component:
 
-    def __init__(self, ui, broker, port): #object is UI
+    def __init__(self, ui, mqtt, broker, port, player):
         self.ui = ui
+        self.player=player
+        self.mqtt=mqtt
+
         t0 = {'source': 'initial',
               'target': 'standby',
               'effect': f'mqtt.start({broker},{port})'
@@ -11,7 +14,7 @@ class StateMachine_Component:
 
         t1 = {'trigger': 'wakeword',
               'source': 'standby',
-              'target': 'waiting_for_command'
+              'target': 'waiting for command'
               }
         t2 = {'trigger': 't',
               'source': 'standby',
@@ -22,7 +25,7 @@ class StateMachine_Component:
               'target': 'play message',
               'effect': "delete_first_msg_que; increment_ID"
               }
-        t5 = {'trigger': 'repeat',
+        t4 = {'trigger': 'repeat',
               'source': 'play message',
               'target': 'play message'
               }
