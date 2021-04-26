@@ -82,7 +82,7 @@ class Player:
         print("driver stopped")
 
 """
-Example
+#Example
 player = Player()
 player.create_stm()
 player.start_playback()

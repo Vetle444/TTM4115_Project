@@ -25,3 +25,6 @@ class Message:
     def play(self):
         self.new = False
         return self.audio_file_path
+
+    def id(self):
+        return self.ID

@@ -20,7 +20,7 @@ class StateMachine_Component:
         t3 = {'trigger': 'skip',
               'source': 'play message',
               'target': 'play message',
-              'effect': "delete_first_msg_que"
+              'effect': "delete_first_msg_que; increment_ID"
               }
         t5 = {'trigger': 'repeat',
               'source': 'play message',
@@ -29,7 +29,113 @@ class StateMachine_Component:
         t5 = {'trigger': 'answer',
               'source': 'play message',
               'target': 'recording message',
-              'effect': 'delete_first_msg_que; turn_red_on'}
+              'effect': 'delete_first_msg_que'}
+
+        t6 = {'trigger': 'stop_message',
+              'source': 'recording message',
+              'target': 'sending message',
+              }
+
+        t7 = {'trigger': 't', # Starts timer on entry recording message if reaches 60s message is to long
+              'source': 'recording message',
+              'target': 'recording message',
+              'effect': "recorded_message_too_long"}
+
+        t8 = {'trigger': 'answer',
+              'source': 'replay message',
+              'target': 'recording message'
+              }
+        t9 = {'trigger': 'skip',
+              'source': 'replay message',
+              'function': 'replay_skip_function'
+              }
+
+        t10 = {'trigger': 'cancel',
+              'source': 'play message',
+              'target': 'waiting for command'
+            }
+        t11 = {'trigger': 'toggle_channel',
+               'source': 'waiting for command',
+               'target': 'toggle general channel'
+               }
+
+        t12 = {'trigger': 'cancel',
+               'source': 'choose recipient listen',
+               'target': 'waiting for command'
+               }
+
+        t13 = {'trigger': 'invalid',
+               'source': 'choose recipient listen',
+               'target': 'choose recipient listen'
+               #read here
+               }
+
+        t14 = {'trigger': 'channel_valid',
+               'source': 'choose recipient listen',
+               'target': 'replay message'
+               }
+
+        t15 = {'trigger': 'choose_mode',
+               'source': 'waiting for command',
+               'target': 'choose state'
+               }
+        t16 = {'trigger': 'send',
+               'source': 'waiting for command',
+               'target': 'choose recipient'
+               }
+
+        t17 = {'trigger': 'cancel',
+               'source': 'choose recipient send',
+               'target': 'waiting for command'
+               }
+
+        t18 = {'trigger': 'invalid',
+               'source': 'choose recipient send',
+               'target': 'choose recipient send'
+               # read here
+             }
+
+        t19 = {'trigger': 'channel_valid',
+               'source': 'choose recipient send',
+               'target': 'replay message'
+               }
+        t20 = {'trigger': 'listen',
+               'source': 'waiting for command',
+               'target': 'choose recipient'
+               }
+
+        t21 = {'trigger': 'cancel',
+               'source': 'toggle general channel',
+               'target': 'waiting for command'
+                }
+
+        t22 = {'trigger': 'done',
+               'source': 'toggle general channel',
+               'function': 'toggle_channel_choice(self.channel_name)'
+               }
+
+        t23 = {'trigger': 'cancel',
+               'source': 'choose state',
+               'target': 'waiting for command'
+                }
+
+        t24 = {'trigger': 'modename',
+               'source': 'choose state',
+               'target': 'waiting for command'
+               }
+        t25 = {'trigger': 'done',
+               'source': 'sending message',
+               'target': 'waiting for command'
+               }
+        t26 = {'trigger': 'cancel',
+               'source': 'recording message',
+               'target': 'waiting for command'
+               }
+        t27 = {'trigger': 'cancel',
+               'source': 'replay message',
+               'target': 'waiting for command'
+               }
+
 
         # the states:
         standby = {'name': 'standby',
@@ -62,7 +168,7 @@ class StateMachine_Component:
                           'entry': play message here}
 
         # Change 4: We pass the set of states to the state machine
-        machine = Machine(name='stm_traffic', transitions=[t0, t1, t2, t3, t4, t5], obj=ui,
+        machine = Machine(name='stm_traffic', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27], obj=ui,
                           states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, send_message, replay_message, play_message])
 
     def que_transition(self):
@@ -75,6 +181,26 @@ class StateMachine_Component:
         else:
             return 'play message'
 
+    def replay_skip_function(self):
+        if ID < self.ui.new_msg_queue[-1]:
+            ID += 1
+            return "replay message"
+        else:
+            print("All messages played") #read
+            return "waiting for command"
+
     def delete_first_msg_que(self):
         del self.ui.new_msg_queue[0]
 
+    def increment_ID(self):
+        ID = ID + 1
+
+    def recorded_message_too_long(self):
+        print("Message too long, try again") #read
+
+    def toggle_channel_choice(self, channel_name):
+        if channel_name == "invalid":
+            print("A channel with this name does not exist!")
+            return "toggle general channel"
+        else:
+            return "waiting for command"
