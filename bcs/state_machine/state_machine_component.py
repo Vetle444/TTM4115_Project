@@ -15,7 +15,7 @@ class StateMachine_Component:
               }
         t2 = {'trigger': 't',
               'source': 'standby',
-              'function': 'que_transition'
+              'function': 'queue_transition'
               }
         t3 = {'trigger': 'skip',
               'source': 'play message',
@@ -144,7 +144,7 @@ class StateMachine_Component:
         waiting_for_command = {'name': 'waiting for command'}
 
         toggle_general_channel = {'name': 'toggle general channel',
-                   'entry': 'self.ui.get_valid_new_channel_name'}
+                   'entry': 'self.channel_name = self.ui.get_valid_new_channel_name'}
 
         choose_state = {'name': 'choose state',
                         'entry': 'self.ui.choose_state'}
@@ -159,19 +159,19 @@ class StateMachine_Component:
                         'entry': start recording here}
 
         send_message = {'name': 'sending message',
-                          'entry': start sending here}
+                          'entry': 'self.mqtt.send_file(channel_name, file_path)'}
 
         replay_message = {'name': 'replay message',
-                          'entry': replay message here}
+                          'entry': 'self.player.play(messages[channel][ID].play())'}
 
         play_message = {'name': 'play message',
-                          'entry': play message here}
+                          'entry': 'self.player.play(new_msg_queue[0].play())'}
 
         # Change 4: We pass the set of states to the state machine
         machine = Machine(name='stm_traffic', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27], obj=ui,
                           states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, send_message, replay_message, play_message])
 
-    def que_transition(self):
+    def queue_transition(self):
         if  0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.doNotDisturb or self.ui.loudnessMode):
             return 'play message'
         elif len(self.ui.new_msg_queue) > 5:
