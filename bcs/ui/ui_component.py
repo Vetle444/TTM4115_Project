@@ -7,8 +7,8 @@ class UI_Component:
         for i in range(50):
             self.channels.append("Test" + str(i))
 
-        self.selectedChannels = []
-        self.recipientChannels = []
+        self.receivingChannels = [] # Channels chosen for subscribing
+        self.recipientChannels = [] # Channels chosen for sending
 
         self.create_gui()
 
@@ -30,16 +30,16 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.startLabelFrame("Select a command", 0, 1)
-        self.app.addButton('Toggle channel', self.OnToggleChannel)
+        self.app.addButton('Toggle receiving channels', self.OnToggleReceivingChannel)
         self.app.addButton('Listen', self.OnListen)
-        self.app.addButton('Record message', self.OnSend)
+        self.app.addButton('Record message', self.OnChooseRecipient)
         self.app.stopLabelFrame()
 
         self.app.hideSubWindow("Main menu")
 
 
     def CreateChannelSubWindow(self):
-        self.app.startSubWindow("Select channels")
+        self.app.startSubWindow("Select receiving channels")
         self.app.startScrollPane("ChannelPane")
 
         self.app.startFrame("ChannelFrame", 0, 0)
@@ -55,7 +55,7 @@ class UI_Component:
         self.app.addButton("Submit", self.OnSubmitChooseChannel, len(self.channels), 0)
         self.app.addButton("Cancel", self.OnCancelChooseChannel, len(self.channels), 1)
 
-        self.app.hideSubWindow("Select channels")
+        self.app.hideSubWindow("Select receiving channels")
 
 
     def CreateChooseRecipientSubWindow(self):
@@ -63,15 +63,15 @@ class UI_Component:
 
         self.app.startScrollPane("RecipientPane")
         self.app.startFrame("RecipientFrame", 0, 0)
-        for i in range(len(self.selectedChannels)):
-            self.app.addCheckBox(self.selectedChannels[i], i, 1)
-        
+        for i in range(len(self.receivingChannels)):
+            self.app.addNamedCheckBox(self.receivingChannels[i], self.receivingChannels[i] + "_recipient", i, 1)
+
         self.app.stopFrame()
         self.app.stopScrollPane()
 
         self.app.startFrame("RecipientButtons", 1, 1)
-        self.app.addNamedButton("Submit", "RecipientSubmit", self.OnSubmitChooseRecipient, len(self.selectedChannels), 0)
-        self.app.addNamedButton("Cancel", "RecipientCancel", self.OnCancelChooseRecipient, len(self.selectedChannels), 0)
+        self.app.addNamedButton("Submit", "RecipientSubmit", self.OnSubmitChooseRecipient, len(self.receivingChannels), 0)
+        self.app.addNamedButton("Cancel", "RecipientCancel", self.OnCancelChooseRecipient, len(self.receivingChannels), 1)
 
 
         self.app.hideSubWindow("Choose recipient")
@@ -79,11 +79,11 @@ class UI_Component:
     def CreateRecordSubWindow(self):
         self.app.startSubWindow("Record Message")
 
-        self.app.addButton("HEI", None)
+        self.app.addButton("Start recording", None)
+        self.app.addButton("Stop recording", None)
+        self.app.addButton("Send message", None)
 
         self.app.hideSubWindow("Record Message")
-
-
 
     def OnWake(self):
         self.app.hideSubWindow("Standby")
@@ -91,9 +91,9 @@ class UI_Component:
 
         return None
 
-    def OnToggleChannel(self):
+    def OnToggleReceivingChannel(self):
         self.app.hideSubWindow("Main menu")
-        self.app.showSubWindow("Select channels")
+        self.app.showSubWindow("Select receiving channels")
 
 
     def OnChooseMode(self):
@@ -105,19 +105,29 @@ class UI_Component:
     def OnListen(self):
         return None
 
-    def OnSend(self):
+    def OnChooseRecipient(self):
+        self.CreateChooseRecipientSubWindow()
         self.app.showSubWindow("Choose recipient")
         self.app.hideSubWindow("Main menu")
 
+    # On record voice message
+    def OnRecord(self):
+        return None
+    
+    # On send reorded message
+    def onSend(self):
+        return None
+
+    # Subscribing channels
     def OnSubmitChooseChannel(self):
         
         for i in range(len(self.channels)):
             if(self.app.getCheckBox(self.channels[i])):
-                self.selectedChannels.append(self.channels[i])
+                self.receivingChannels.append(self.channels[i])
 
-        print(self.selectedChannels)
+        print(self.receivingChannels)
 
-        self.app.hideSubWindow("Select channels")
+        self.app.hideSubWindow("Select receiving channels")
         self.app.showSubWindow("Main menu")
 
         return None
@@ -126,19 +136,22 @@ class UI_Component:
         self.app.clearAllCheckBoxes()
 
 
-        self.app.hideSubWindow("Select channels")
+        self.app.hideSubWindow("Select receiving channels")
         self.app.showSubWindow("Main menu")
         return None
 
+    # Sending channels
     def OnSubmitChooseRecipient(self):
-        for i in range(len(self.selectedChannels)):
-            if(self.app.getCheckBox(self.selectedChannels[i])):
-                self.selectedChannels.append(self.selectedChannels[i])
+        for i in range(len(self.receivingChannels)):
+            if(self.app.getCheckBox(self.receivingChannels[i])):
+                self.recipientChannels.append(self.receivingChannels[i])
 
-        print(self.selectedChannels)
+        print(self.recipientChannels)
 
-        self.app.hideSubWindow("Select channels")
+        self.app.hideSubWindow("Select receiving channels")
         self.app.showSubWindow("Record Message")
+
+        self.app.destroySubWindow("Choose recipient")
 
         return None
     
@@ -148,6 +161,9 @@ class UI_Component:
 
         self.app.hideSubWindow("Choose recipient")
         self.app.showSubWindow("Main menu")
+
+        self.app.destroySubWindow("Choose recipient")
+
         return None
 
     def create_gui(self):
@@ -157,7 +173,8 @@ class UI_Component:
         self.CreateCommandSubWindow()
         self.CreateChannelSubWindow()
         self.CreateRecordSubWindow()
-        self.CreateChooseRecipientSubWindow()
 
         self.app.go(startWindow="Standby")
+
+test = UI_Component()
 
