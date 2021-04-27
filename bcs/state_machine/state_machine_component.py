@@ -2,7 +2,7 @@ from stmpy import Machine, Driver
 
 class StateMachine_Component:
 
-    def __init__(self, ui, mqtt, broker, port, player):
+    def __init__(self, ui, mqtt, player, recorder):
         self.ui = ui
         self.player=player
         self.mqtt=mqtt
