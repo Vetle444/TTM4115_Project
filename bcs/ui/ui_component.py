@@ -35,7 +35,8 @@ class UI_Component:
 
         self.app.startLabelFrame("Select a command", 0, 1)
         self.app.addButton('Toggle receiving channels', lambda: self.SwitchWindow("Main menu", "Select receiving channels"))
-        self.app.addButton('Replay old messages', lambda: self.SwitchWindow("Main menu", "Playback message"))
+        #self.app.addButton('Replay old messages', lambda: self.SwitchWindow("Main menu", "Playback message"))
+        self.app.addButton('Replay old messages', self.onViewChannelsWithNewMessages)
         self.app.addButton('Record message', self.OnChooseRecipient)
         self.app.stopLabelFrame()
 
@@ -115,23 +116,33 @@ class UI_Component:
         Flow: Main menu -> CreateNewMessagesPerChannelWindow (THIS)
         -> CreateNewMessagesPerMessageWindow -> CreatePlaybackMessageWindow
         '''
+        print("CreateNewMessagesPerChannelWindow is called")
+        self.app.startSubWindow("New messages per channel")
+        # TODO: Create som view
+        for i in range(5):
+            self.app.addButton("Button {}".format(i), lambda: None)
 
-        return None
-    
+        
+        #self.app.stopSubWindow()
+        self.app.hideSubWindow("New messages per channel")
+
+        
+
     def CreateNewMessagesPerMessageWindow(self, channel=None):
         '''
         Displays a list of all messages for a given channel
         Flow: Main menu -> CreateNewMessagesPerChannelWindow
         -> CreateNewMessagesPerMessageWindow (THIS) -> CreatePlaybackMessageWindow
         '''
+
         return None
     
     def onViewChannelsWithNewMessages(self):
         # Should be called on click from main menu
         # Should find the correct channels, and pass to CreateNewMessagesPerChannelWindow
         # Should close main menu
-        self.CreateNewMessagesPerChannelWindow()
-        return None
+        print("onViewChannelsWithNewMessages called")
+        self.SwitchWindow("Main menu", "New messages per channel")
 
     def onViewMessagesWithNewMessages(self):
         # Should be called on click fromCreateNewMessagesPerChannelWindow
@@ -240,7 +251,7 @@ class UI_Component:
         self.CreateRecordSubWindow()
         self.CreateStopRecordSubWindow()
         self.CreatePlaybackMessageWindow()
-        self.CreateNewMessagesPerMessageWindow()
+        #self.CreateNewMessagesPerMessageWindow()
         self.CreateNewMessagesPerChannelWindow()
 
         self.app.go(startWindow="Standby")
