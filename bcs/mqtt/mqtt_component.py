@@ -29,7 +29,7 @@ class MQTT_Client:
     or send messages via the functions
     """
 
-    def __init__(self, user_name, ui_stm):
+    def __init__(self, user_name, stm):
         self.count = 0
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
@@ -37,7 +37,7 @@ class MQTT_Client:
         self.user_name = user_name
         self.prefix = "/group17/"
         self.message_count = 0
-        self.ui_stm = ui_stm
+        self.stm = stm
         self.channel_list = []
         self.message_storage = "./messages/"
         if not os.path.exists(os.path.dirname(self.message_storage)):
@@ -77,8 +77,7 @@ class MQTT_Client:
             file_object.close()
             message = Message(topic, self.message_count,
                               self.message_storage + topic + str(self.message_count) + file_extension)
-            # self.ui_stm.new_msg_queue_add(message)
-            # add file into queue of new, unheard messages, also add into list of messages from channel
+            self.stm.add_message(message)
 
     def subscribe(self, channel_name):
         self.client.subscribe(self.prefix + channel_name)

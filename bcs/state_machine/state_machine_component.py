@@ -23,10 +23,10 @@ class StateMachine_Component:
               'source': 'standby',
               'function': 'queue_transition'
               }
-        t3 = {'trigger': 'skip',
+        t3 = {'trigger': 'next',
               'source': 'play message',
               'target': 'play message',
-              'effect': "delete_first_msg_que; increment_ID"
+              'effect': "delete_first_msg_queue"
               }
         t4 = {'trigger': 'repeat',
               'source': 'play message',
@@ -35,7 +35,7 @@ class StateMachine_Component:
         t5 = {'trigger': 'answer',
               'source': 'play message',
               'target': 'recording message',
-              'effect': 'delete_first_msg_que'}
+              'effect': 'delete_first_msg_queue'}
 
         t6 = {'trigger': 'stop_message',
               'source': 'recording message',
@@ -156,15 +156,15 @@ class StateMachine_Component:
         choose_state = {'name': 'choose state',
                         'entry': 'self.ui.choose_state'}
 
-        choose_recipient_listen = {'name': 'choose recipient listen',
-                        'entry': 'self.ui.choose_channel'}
+        choose_recipient_and_message_listen = {'name': 'choose recipient listen',
+                                   'do': 'choose_channel_from_received'}
 
         choose_recipient_send = {'name': 'choose recipient send',
-                                   'entry': 'self.ui.choose_channel'}
+                                 'do': 'choose_channel_from_list'}
 
         record_message = {'name': 'recording message',
-                        'entry': "self.recorder.start_recording()",
-                          } # TODO
+                          'entry': "self.recorder.start_recording()",
+                          }
 
 
         replay_message = {'name': 'replay message',
@@ -195,7 +195,7 @@ class StateMachine_Component:
             print("All messages played") #read
             return "waiting for command"
 
-    def delete_first_msg_que(self):
+    def delete_first_msg_queue(self):
         del self.new_msg_queue[0]
 
     def recorded_message_too_long(self):
@@ -206,8 +206,27 @@ class StateMachine_Component:
             print("A channel with this name does not exist!")
             return "toggle general channel"
         else:
+            self.mqtt.subscribe(self.recipient)
             return "waiting for command"
 
     def add_message(self, message):
         self.new_msg_queue.append(message)
-        self.messages['message.channel'] =
+        if message.channel_name not in self.messages.keys():
+            self.messages[message.channel_name] = []
+        elif len(self.messages[message.channel_name]) > 30:
+            del self.messages[message.channel_name][0]
+        self.messages[message.channel_name].append(message)
+
+    def play_message_from_queue(self):
+        self.player.play(self.new_msg_queue[0].play())
+        self.recipient = self.new_msg_queue[0].channel_name
+
+    def replay_message_from_dict(self):
+        index= self.ui.index  #RETRIEVE VARIABLE FROM UI COMPONENT
+        self.player.play(self.messages[self.recipient][index].play())
+
+    def choose_channel_from_all(self):
+        self.recipient = self.ui.choose_channel(self.mqtt.channel_list)
+
+    def choose_channel_from_received(self):
+        self.recipient = self.ui.choose_channel([self.messages.keys()])

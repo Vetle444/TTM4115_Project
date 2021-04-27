@@ -43,7 +43,10 @@ class Player:
         data = wf.readframes(chunk)
 
         # Play the sound by writing the audio data to the stream
+        self.stop = False
         while data != '':
+            #if self.stop:
+            #    break
             stream.write(data)
             data = wf.readframes(chunk)
 
@@ -51,13 +54,17 @@ class Player:
         stream.close()
         p.terminate()
 
+    def stop(self):
+        print("stop")
+        self.stop = True
+        #self.wf.close()
 
     def create_stm(self):
         t0 = {'source': 'initial', 'target': 'ready'}
         t1 = {'trigger': 'start', 'source': 'ready', 'target': 'playing'}
         t2 = {'trigger': 'done', 'source': 'playing', 'target': 'ready'}
 
-        s_playing = {'name': 'playing', 'do': 'play()'}
+        s_playing = {'name': 'playing', 'do': 'play()', 'stop': 'stop()'}
 
         stm = Machine(name='stm', transitions=[t0, t1, t2], states=[s_playing], obj=player)
         self.stm = stm
