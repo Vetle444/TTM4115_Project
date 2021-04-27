@@ -1,14 +1,13 @@
 from appJar import gui
 
 class UI_Component:
-    def __init__(self):
-        self.channels = []
-
-        for i in range(50):
-            self.channels.append("Test" + str(i))
-
+    def __init__(self, channels):
+        self.channels = channels # All mqtt channels
         self.receivingChannels = [] # Channels chosen for subscribing
         self.recipientChannels = [] # Channels chosen for sending
+
+        self.channelsWithMessages = [ "Test1", "Test2"] # Channels containing incoming messages
+        self.messagesInChannel = ["Hei", "Halloen"] # All the incoming messages containing in the channel selected
 
         self.create_gui()
 
@@ -17,8 +16,13 @@ class UI_Component:
         self.app.startSubWindow("Standby")
         self.app.addButton('Wake device', self.OnWake)
 
+        self.app.stopSubWindow()
 
     def CreateCommandSubWindow(self):
+        '''
+        Main menu, for choosing all main functions. When receiving channels are chosen, 
+        new messages should pop-up here.
+        '''
         self.app.startSubWindow("Main menu")
         self.app.setSize(400,200)
 
@@ -30,11 +34,13 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.startLabelFrame("Select a command", 0, 1)
-        self.app.addButton('Toggle receiving channels', self.OnToggleReceivingChannel)
-        self.app.addButton('Listen', self.OnListen)
+        self.app.addButton('Toggle receiving channels', lambda: self.SwitchWindow("Main menu", "Select receiving channels"))
+        #self.app.addButton('Replay old messages', lambda: self.SwitchWindow("Main menu", "Playback message"))
+        self.app.addButton('Replay old messages', self.onViewChannelsWithNewMessages)
         self.app.addButton('Record message', self.OnChooseRecipient)
         self.app.stopLabelFrame()
 
+        self.app.stopSubWindow()
         self.app.hideSubWindow("Main menu")
 
 
@@ -54,12 +60,16 @@ class UI_Component:
         self.app.startFrame("ChannelButtons", 1, 1)
         self.app.addButton("Submit", self.OnSubmitChooseChannel, len(self.channels), 0)
         self.app.addButton("Cancel", self.OnCancelChooseChannel, len(self.channels), 1)
+        self.app.stopFrame()
 
+        self.app.stopSubWindow()
         self.app.hideSubWindow("Select receiving channels")
 
 
     def CreateChooseRecipientSubWindow(self):
         self.app.startSubWindow("Choose recipient")
+
+        self.recipientChannels = []
 
         self.app.startScrollPane("RecipientPane")
         self.app.startFrame("RecipientFrame", 0, 0)
@@ -73,46 +83,116 @@ class UI_Component:
         self.app.addNamedButton("Submit", "RecipientSubmit", self.OnSubmitChooseRecipient, len(self.receivingChannels), 0)
         self.app.addNamedButton("Cancel", "RecipientCancel", self.OnCancelChooseRecipient, len(self.receivingChannels), 1)
 
-
-        self.app.hideSubWindow("Choose recipient")
-
     def CreateRecordSubWindow(self):
         self.app.startSubWindow("Record Message")
+        self.app.setSize(400,200)
 
-        self.app.addButton("Start recording", None)
-        self.app.addButton("Stop recording", None)
-        self.app.addButton("Send message", None)
+        self.app.addButton("Start recording", self.OnRecord)
+        self.app.addNamedButton("Cancel", "Cancel_Record", self.OnCancelRecord)
 
+        self.app.stopSubWindow()
         self.app.hideSubWindow("Record Message")
 
-    def OnWake(self):
-        self.app.hideSubWindow("Standby")
-        self.app.showSubWindow("Main menu")
+    def CreateStopRecordSubWindow(self):
+        self.app.startSubWindow("Stop recording and send")
+
+        self.app.addNamedButton("Stop recording and send", "StopRecordingAndSend", self.onStopRecording)
+
+        self.app.stopSubWindow()
+
+    def CreatePlaybackMessageWindow(self, msg=None):
+        '''
+        Takes in a message for playback.
+        '''
+        self.app.startSubWindow("Playback message")
+        self.app.addButton("View old messages", None) # TODO: Use change view function to go to main menu
+        self.app.addNamedButton("Main Menu", "GotoMainMenuFromPlayback",
+                                lambda: self.SwitchWindow("Playback message", "Main menu"))
+        self.app.stopSubWindow()
+
+    def CreateNewMessagesPerChannelWindow(self):
+        '''
+        Displays a list of all channels (with new messages?)
+        Flow: Main menu -> CreateNewMessagesPerChannelWindow (THIS)
+        -> CreateNewMessagesPerMessageWindow -> CreatePlaybackMessageWindow
+        '''
+        print("CreateNewMessagesPerChannelWindow is called")
+        self.app.startSubWindow("New messages per channel")
+        # TODO: Create som view
+        for i in range(5):
+            self.app.addButton("Button {}".format(i), lambda: None)
+
+        
+        #self.app.stopSubWindow()
+        self.app.hideSubWindow("New messages per channel")
+
+        
+
+    def CreateNewMessagesPerMessageWindow(self, channel=None):
+        '''
+        Displays a list of all messages for a given channel
+        Flow: Main menu -> CreateNewMessagesPerChannelWindow
+        -> CreateNewMessagesPerMessageWindow (THIS) -> CreatePlaybackMessageWindow
+        '''
 
         return None
+    
+    def onViewChannelsWithNewMessages(self):
+        # Should be called on click from main menu
+        # Should find the correct channels, and pass to CreateNewMessagesPerChannelWindow
+        # Should close main menu
+        print("onViewChannelsWithNewMessages called")
+        self.SwitchWindow("Main menu", "New messages per channel")
 
-    def OnToggleReceivingChannel(self):
-        self.app.hideSubWindow("Main menu")
-        self.app.showSubWindow("Select receiving channels")
+    def onViewMessagesWithNewMessages(self):
+        # Should be called on click fromCreateNewMessagesPerChannelWindow
+        # Should fint the correct channles, and pass to CreateNewMessagesPerMessageWindow
+        # Should close fromCreateNewMessagesPerChannelWindow
+        return None
+
+    def onStopRecording(self):
+        # TODO: Stop recording, then send with mqtt
+        self.CreateChooseRecipientSubWindow()
+        self.SwitchWindow("Stop recording and send", "Main menu")
+        self.app.destroySubWindow("Choose recipient")
+        
+    def OnWake(self):
+        self.SwitchWindow("Standby", "Main menu")
+
+    #def OnToggleReceivingChannel(self):
+    #    self.SwitchWindow("Main menu", "Select receiving channels")
 
 
     def OnChooseMode(self):
-
         print(self.app.getRadioButton("mode"))
 
-        return None
 
-    def OnListen(self):
-        return None
+    #def OnReplayOld(self):
+        #self.OnError("Not implemented", "This function is not implemented yet")
+        #self.SwitchWindow("Main menu", "Playback message")
 
     def OnChooseRecipient(self):
+        if(len(self.receivingChannels) == 0):
+            self.OnError("Not selected any channels", "You have not selected any channels to subscribe to, please select receiving channels")
+            return
+
         self.CreateChooseRecipientSubWindow()
-        self.app.showSubWindow("Choose recipient")
-        self.app.hideSubWindow("Main menu")
+        
+        self.SwitchWindow("Main menu", "Choose recipient")
+
+    def OnError(self, errr_title, error_msg):
+        self.app.errorBox(errr_title, error_msg)
+        self.app.setSize(400,200)
+
+
+    def OnCancelRecord(self):
+        self.CreateChooseRecipientSubWindow()
+        self.SwitchWindow("Record Message", "Choose recipient")
 
     # On record voice message
     def OnRecord(self):
-        return None
+        # TODO: Start voice recording
+        self.SwitchWindow("Record Message", "Stop recording and send")
     
     # On send reorded message
     def onSend(self):
@@ -122,49 +202,45 @@ class UI_Component:
     def OnSubmitChooseChannel(self):
         
         for i in range(len(self.channels)):
-            if(self.app.getCheckBox(self.channels[i])):
+            if(self.app.getCheckBox(self.channels[i]) and self.channels[i] not in self.receivingChannels):
                 self.receivingChannels.append(self.channels[i])
-
+            #Remove if unticked checkbox that was already ticked when moved into subWindow
+            elif(self.app.getCheckBox(self.channels[i]) == False and self.channels[i] in self.receivingChannels):
+                self.receivingChannels.remove(self.channels[i])
+            
         print(self.receivingChannels)
 
-        self.app.hideSubWindow("Select receiving channels")
-        self.app.showSubWindow("Main menu")
+        self.SwitchWindow("Select receiving channels", "Main menu")
+
 
         return None
     
     def OnCancelChooseChannel(self):
-        self.app.clearAllCheckBoxes()
+        # If you untick checkboxes that are in active receiving channels and then cancel, set the checkboxes that are in active receiving channels to true again
+        for i in range(len(self.channels)):
+            if(self.app.getCheckBox(self.channels[i]) == False and self.channels[i] in self.receivingChannels):
+                self.app.setCheckBox(self.channels[i], True, True)
 
-
-        self.app.hideSubWindow("Select receiving channels")
-        self.app.showSubWindow("Main menu")
-        return None
+        self.SwitchWindow("Select receiving channels", "Main menu")
 
     # Sending channels
     def OnSubmitChooseRecipient(self):
         for i in range(len(self.receivingChannels)):
-            if(self.app.getCheckBox(self.receivingChannels[i])):
+            if(self.app.getCheckBox(self.receivingChannels[i] + "_recipient")):
                 self.recipientChannels.append(self.receivingChannels[i])
 
         print(self.recipientChannels)
 
-        self.app.hideSubWindow("Select receiving channels")
+        self.app.destroySubWindow("Choose recipient")
+
         self.app.showSubWindow("Record Message")
 
-        self.app.destroySubWindow("Choose recipient")
-
-        return None
-    
     def OnCancelChooseRecipient(self):
-        self.app.clearAllCheckBoxes()
-
-
-        self.app.hideSubWindow("Choose recipient")
-        self.app.showSubWindow("Main menu")
+        #self.app.clearAllCheckBoxes()
 
         self.app.destroySubWindow("Choose recipient")
-
-        return None
+        self.app.showSubWindow("Main menu")
+        
 
     def create_gui(self):
         self.app = gui()
@@ -173,8 +249,19 @@ class UI_Component:
         self.CreateCommandSubWindow()
         self.CreateChannelSubWindow()
         self.CreateRecordSubWindow()
+        self.CreateStopRecordSubWindow()
+        self.CreatePlaybackMessageWindow()
+        #self.CreateNewMessagesPerMessageWindow()
+        self.CreateNewMessagesPerChannelWindow()
 
         self.app.go(startWindow="Standby")
 
-test = UI_Component()
+    def SwitchWindow(self, fromSubWindow, toSubWindow):
+        self.app.hideSubWindow(fromSubWindow)
+        self.app.showSubWindow(toSubWindow)
+
+channels = []
+for i in range(50):
+            channels.append("Test" + str(i))
+test = UI_Component(channels)
 
