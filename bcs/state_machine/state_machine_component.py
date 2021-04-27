@@ -9,10 +9,10 @@ class StateMachine_Component:
         self.ID = 0
         self.new_msg_queue = []
         self.messages = {}
+        self.recipient = None
 
         t0 = {'source': 'initial',
               'target': 'standby',
-              'effect': f'mqtt.start({broker},{port})'
               }
 
         t1 = {'trigger': 'wakeword',
@@ -42,10 +42,10 @@ class StateMachine_Component:
               'target': 'sending message',
               }
 
-        t7 = {'trigger': 't', # Starts timer on entry recording message if reaches 60s message is to long
-              'source': 'recording message',
-              'target': 'recording message',
-              'effect': "recorded_message_too_long"}
+  #      t7 = {'trigger': 't', # Starts timer on entry recording message if reaches 60s message is to long
+   #           'source': 'recording message',
+    #          'target': 'recording message',
+     #         'effect': "recorded_message_too_long"}
 
         t8 = {'trigger': 'answer',
               'source': 'replay message',
@@ -163,20 +163,19 @@ class StateMachine_Component:
                                    'entry': 'self.ui.choose_channel'}
 
         record_message = {'name': 'recording message',
-                        'entry': start recording here}
+                        'entry': "self.recorder.start_recording()",
+                          } # TODO
 
-        send_message = {'name': 'sending message',
-                          'entry': 'self.mqtt.send_file(channel_name, file_path)'}
 
         replay_message = {'name': 'replay message',
-                          'entry': 'self.player.play(messages[channel][ID].play())'}
+                          'entry': 'self.replay_from_dict(*)'}# TODO move to transition??
 
         play_message = {'name': 'play message',
-                          'entry': 'self.player.play(new_msg_queue[0].play())'}
+                          'entry': 'self.play_message_from_queue()'}
 
         # Change 4: We pass the set of states to the state machine
-        machine = Machine(name='stm_traffic', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27], obj=ui,
-                          states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, send_message, replay_message, play_message])
+        machine = Machine(name='stm_traffic', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26], obj=ui,
+                          states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message])
 
     def queue_transition(self):
         if  0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.doNotDisturb or self.ui.loudnessMode):
@@ -197,7 +196,7 @@ class StateMachine_Component:
             return "waiting for command"
 
     def delete_first_msg_que(self):
-        del self.ui.new_msg_queue[0]
+        del self.new_msg_queue[0]
 
     def increment_ID(self):
         self.ID = self.ID + 1

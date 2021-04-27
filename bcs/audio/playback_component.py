@@ -18,9 +18,11 @@ Call stop playback
         
 class Player:
     def __init__(self):
-        
-    def play(self, filename):
 
+        self.filename=None
+        self.wf = None
+
+    def play(self):
         # Set chunk size of 1024 samples per data frame
         chunk = 1024  
 
@@ -65,19 +67,15 @@ class Player:
         self.driver.start()
 
         print("driver started")
-    
-    def start_playback(self):
+
+    def start_playback(self,filename):
+        self.filename=filename
         self.driver.send('start', 'stm')
-    
 
     def stop_playback(self):
         self.driver.send('stop', 'stm')
+        print("driver stopped?")
 
-    def stop_stm(self):
-        self.driver.stop()
-        print("driver stopped")
-
-"""
 #Example
 player = Player()
 player.create_stm()

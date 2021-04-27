@@ -63,19 +63,8 @@ class Recorder:
         wf.writeframes(b''.join(self.frames))
         wf.close()
         print("processing done")
-
-    def create_stm(self):
-        t0 = {'source': 'initial', 'target': 'ready'}
-        t1 = {'trigger': 'start', 'source': 'ready', 'target': 'recording'}
-        t2 = {'trigger': 'done', 'source': 'recording', 'target': 'processing'}
-        t3 = {'trigger': 'done', 'source': 'processing', 'target': 'ready'}
-
-        s_recording = {'name': 'recording', 'do': 'record()', "stop": "stop()"}
-        s_processing = {'name': 'processing', 'do': 'process()'}
-
-        stm = Machine(name='stm', transitions=[t0, t1, t2, t3], states=[
-                      s_recording, s_processing], obj=self)
-        self.stm = stm
+        
+        self.mqtt.send_file(self.channel_name, self.filename)
 
         self.driver = Driver()
         self.driver.add_machine(stm)

@@ -1,4 +1,4 @@
-from ui.ui_component import *
+#from ui.ui_component import *
 from mqtt.mqtt_component import *
 
 # Create a ui_component object
@@ -8,5 +8,6 @@ mqtt_client = MQTT_Client("erlend", "bla")
 broker, port = "mqtt.item.ntnu.no", 1883
 
 mqtt_client.start(broker, port)
+
 
 mqtt_client.send_file("erlend", './audio/audio.wav')
