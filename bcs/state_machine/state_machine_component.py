@@ -198,9 +198,6 @@ class StateMachine_Component:
     def delete_first_msg_que(self):
         del self.new_msg_queue[0]
 
-    def increment_ID(self):
-        self.ID = self.ID + 1
-
     def recorded_message_too_long(self):
         print("Message too long, try again") #read
 
