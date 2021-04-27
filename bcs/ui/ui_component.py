@@ -7,15 +7,9 @@ class UI_Component:
         self.receivingChannels = []  # Channels chosen for subscribing
         self.recipientChannels = []  # Channels chosen for sending
 
-        # Used as storage when playingback of old messages
-        self.chosenChannelForPlayback = ""
-        # Used as storage when playingback of old messages and new messages
-        self.chosenMessageForPlayback = ""
+        self.channelsWithMessages = ["Channel 1", "Channel 2"]
+        self.messages = ["Message 1", "Message 2"]
 
-        # Channels containing incoming messages
-        self.channelsWithMessages = ["Test1", "Test2"]
-        # All the incoming messages containing in the channel selected
-        self.messagesInChannel = ["Hei", "Halloen"]
 
         self.create_gui()
 
@@ -113,68 +107,46 @@ class UI_Component:
 
         self.app.stopSubWindow()
 
-    def CreatePlaybackMessageWindow(self):
+    def CreatePlaybackMessageWindow(self, message="Msg 1", channel="Chnl 1"):
         '''
         Plays back message stored as chosenChannelForPlayback.
-        '''
+
         self.app.startSubWindow("Playback message")
         # TODO: Use change view function to go to main menu
         self.app.addButton("View old messages", None)
         self.app.addNamedButton("Main Menu", "GotoMainMenuFromPlayback",
                                 lambda: self.SwitchWindow("Playback message", "Main menu"))
         self.app.stopSubWindow()
-
-    def CreateNewMessagesPerChannelWindow(self):
         '''
-        Displays a list of all channels (with new messages?)
-        Flow: Main menu -> CreateNewMessagesPerChannelWindow (THIS)
-        -> CreateNewMessagesPerMessageWindow -> CreatePlaybackMessageWindow
-        Stores chosen channel in object variable chosenChannelForPlayback.
-        '''
-        print("CreateNewMessagesPerChannelWindow is called")
-        self.app.startSubWindow("New messages per channel")
-        # TODO: Create som view
-        for i in range(5):
-            channel = "Channel {}".format(i)
-            self.app.addRadioButton("channel", channel)
-        self.app.setRadioButtonChangeFunction(
-            "channel", self.setChosenChannelForPlayback)
-        # self.app.stopSubWindow()
-        self.app.addButton(
-            "Choose message", self.onViewMessagesWithNewMessages)
+        return None
 
-        self.app.hideSubWindow("New messages per channel")
 
     def CreateNewMessagesPerMessageWindow(self, channel=None):
-        '''
-        Displays a list of all messages for the channel stored in object variable chosenMessageForPlayback.
-        Flow: Main menu -> CreateNewMessagesPerChannelWindow
-        -> CreateNewMessagesPerMessageWindow (THIS) -> CreatePlaybackMessageWindow
-        Stores chosen message in object variable chosenMessageForPlayback.
-        '''
-        self.app.startSubWindow("New messages per message")
-        for i in range(5):
-            self.app.addButton("{}, Message {}".format(
-                self.chosenChannelForPlayback, i), self.onViewPlaybackMessage)
+        self.app.startSubWindow("Unread messages in channel")
+        self.app.showSubWindow("Unread messages in channel")
+        self.app.addLabel("Here are the messages for channel: {}".format(channel))
+        self.app.addButton("Some button xyz", lambda: None)
+        print("CreateNewMessagesPerChannelWindow called")
+        #self.app.stopSubWindow()
 
-        self.app.hideSubWindow("New messages per message")
-
-    def setChosenChannelForPlayback(self, rb):
-        self.chosenChannelForPlayback = self.app.getRadioButton("channel")
-        print("chosenChannelForPlayback is", self.chosenChannelForPlayback)
-
-    def setChosenMessageForPlayback(self, rb):
-        self.chosenMessageForPlayback = self.app.getRadioButton("message")
-        print("chosenMessageForPlayback is", self.chosenMessaegForPlayback)
+    def CreateNewMessagesPerChannelWindow(self):
+        self.app.startSubWindow("Unread messages per channel")
+        self.app.showSubWindow("Unread messages per channel")
+        self.app.addLabel("Here are the channels")
+        self.app.addButton("Some button 123", self.onViewMessagesWithNewMessages)
+        print("CreateNewMessagesPerChannelWindow called")
+        #self.app.stopSubWindow()
 
     def onViewChannelsWithNewMessages(self):
         # Should be called on click from main menu
         # Should find the correct channels, and pass to CreateNewMessagesPerChannelWindow
         # Should close main menu
         print("onViewChannelsWithNewMessages called")
+        self.CreateNewMessagesPerChannelWindow()
+
 
         #self.app.hideSubWindow("Main menu")
-        self.app.showSubWindow("New messages per channel")
+        #self.app.showSubWindow("New messages per channel")
         #self.SwitchWindow("Main menu", "New messages per channel")
 
     def onViewMessagesWithNewMessages(self):
@@ -182,8 +154,10 @@ class UI_Component:
         # Should fint the correct channles, and pass to CreateNewMessagesPerMessageWindow
         # Should close fromCreateNewMessagesPerChannelWindow
         print("onViewMessagesWithNewMessages called")
-        self.app.hideSubWindow("New messages per channel")
-        self.app.showSubWindow("New messages per message")
+        self.CreateNewMessagesPerMessageWindow()
+        self.app.destroySubWindow("Unread messages per channel")
+        #self.app.hideSubWindow("New messages per channel")
+        #self.app.showSubWindow("New messages per message")
 
     def onViewPlaybackMessage(self):
         self.app.hideSubWindow("New messages per message")
@@ -285,9 +259,9 @@ class UI_Component:
         self.CreateChannelSubWindow()
         self.CreateRecordSubWindow()
         self.CreateStopRecordSubWindow()
-        self.CreatePlaybackMessageWindow()
-        self.CreateNewMessagesPerMessageWindow()
-        self.CreateNewMessagesPerChannelWindow()
+        #self.CreatePlaybackMessageWindow()
+        #self.CreateNewMessagesPerMessageWindow()
+        #self.CreateNewMessagesPerChannelWindow()
 
         self.app.go(startWindow="Standby")
 
