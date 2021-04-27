@@ -4,8 +4,9 @@ class StateMachine_Component:
 
     def __init__(self, ui, mqtt, player, recorder):
         self.ui = ui
-        self.player=player
-        self.mqtt=mqtt
+        self.player = player
+        self.recorder = recorder
+        self.mqtt = mqtt
         self.ID = 0
         self.new_msg_queue = []
         self.messages = {}
@@ -39,7 +40,8 @@ class StateMachine_Component:
 
         t6 = {'trigger': 'stop_message',
               'source': 'recording message',
-              'target': 'sending message',
+              'target': 'waiting for command',
+              'effect': 'recorder.stop_recording(*)'
               }
 
   #      t7 = {'trigger': 't', # Starts timer on entry recording message if reaches 60s message is to long
@@ -129,19 +131,16 @@ class StateMachine_Component:
                'source': 'choose state',
                'target': 'waiting for command'
                }
-        t25 = {'trigger': 'done',
-               'source': 'sending message',
-               'target': 'waiting for command'
-               }
-        t26 = {'trigger': 'cancel',
+
+        t25 = {'trigger': 'cancel',
                'source': 'recording message',
                'target': 'waiting for command'
                }
-        t27 = {'trigger': 'cancel',
+
+        t26 = {'trigger': 'cancel',
                'source': 'replay message',
                'target': 'waiting for command'
                }
-
 
         # the states:
         standby = {'name': 'standby',
@@ -168,7 +167,7 @@ class StateMachine_Component:
 
 
         replay_message = {'name': 'replay message',
-                          'entry': 'self.replay_from_dict(*)'}# TODO move to transition??
+                          'entry': 'self.replay_message_from_dict()'}# TODO move to transition??
 
         play_message = {'name': 'play message',
                           'entry': 'self.play_message_from_queue()'}
@@ -178,7 +177,7 @@ class StateMachine_Component:
                           states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_and_message_listen, choose_recipient_send, record_message, replay_message, play_message])
 
     def queue_transition(self):
-        if  0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.doNotDisturb or self.ui.loudnessMode):
+        if 0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.do_not_disturb or self.ui.loudness_mode):
             return 'play message'
         elif len(self.ui.new_msg_queue) > 5:
             self.ui.new_msg_queue = []
@@ -188,8 +187,8 @@ class StateMachine_Component:
             return 'play message'
 
     def replay_skip_function(self):
-        if ID < self.ui.new_msg_queue[-1]:
-            ID += 1
+        if self.ID < self.ui.new_msg_queue[-1]:
+            self.ID += 1
             return "replay message"
         else:
             print("All messages played") #read

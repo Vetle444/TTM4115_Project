@@ -15,11 +15,10 @@ class Recorder:
     How to use:
     Initiate the object.
     Use create_stm() to create the state machine.
-    Use start_recording() to start a recording.
-    Use stop_recording() to stop a recording.
+    Use recording() to start a recording.
     '''
 
-    def __init__(self):
+    def __init__(self, mqtt):
         self.recording = False
         self.chunk = 1024  # Record in chunks of 1024 samples
         self.sample_format = pyaudio.paInt16  # 16 bits per sample
@@ -27,6 +26,25 @@ class Recorder:
         self.fs = 44100  # Record at 44100 samples per second
         self.filename = "recorded_message.wav"
         self.p = pyaudio.PyAudio()
+        self.mqtt=mqtt
+        self.channel_name=None
+
+        # Make recorder state machine
+        t0 = {'source': 'initial', 'target': 'ready'}
+        t1 = {'trigger': 'start', 'source': 'ready', 'target': 'recording'}
+        t2 = {'trigger': 'done', 'source': 'recording', 'target': 'processing'}
+        t3 = {'trigger': 'done', 'source': 'processing', 'target': 'ready'}
+
+        s_recording = {'name': 'recording', 'do': 'record()', "stop": "stop()"}
+        s_processing = {'name': 'processing', 'do': 'process()'}
+
+        stm = Machine(name='stm', transitions=[t0, t1, t2, t3], states=[
+            s_recording, s_processing], obj=self)
+        self.stm = stm
+
+        self.driver = Driver()
+        self.driver.add_machine(stm)
+        self.driver.start()
 
     def record(self):
         print("recording")
@@ -73,17 +91,18 @@ class Recorder:
     def start_recording(self):
         self.driver.send('start', 'stm')
 
-    def stop_recording(self):
+    def stop_recording(self, channel_name):
+        self.channel_name = channel_name
         self.driver.send('stop', 'stm')
 
 
 # Example code
-'''
+"""
 recorder = Recorder()
 recorder.create_stm()
 recorder.start_recording()
-time.sleep(3)
-recorder.stop_recording()
+time.sleep(30)
+recorder.stop_recording("channelName")
 time.sleep(2)
-recorder.stop_stm()
-'''
+# recorder.stop_stm()
+"""
