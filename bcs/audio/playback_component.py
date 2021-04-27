@@ -83,6 +83,7 @@ class Player:
         self.driver.send('stop', 'stm')
         print("driver stopped?")
 
+"""
 #Example
 player = Player()
 player.create_stm()
