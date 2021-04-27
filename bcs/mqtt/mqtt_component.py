@@ -47,7 +47,7 @@ class MQTT_Client:
                 if exc.errno != errno.EEXIST:
                     raise
 
-    def send_channel_list(self):
+    def create_channel_list(self):
         # sending hard coded channel list to simulate server component
         payload = "Test,Erlend,Group 1,Group 2"
         try:

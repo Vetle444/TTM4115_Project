@@ -117,7 +117,7 @@ class StateMachine_Component:
 
         t22 = {'trigger': 'done',
                'source': 'toggle general channel',
-               'function': 'toggle_channel_choice(self.channel_name)'
+               'function': 'toggle_channel_choice(*)'
                }
 
         t23 = {'trigger': 'cancel',
@@ -125,7 +125,7 @@ class StateMachine_Component:
                'target': 'waiting for command'
                 }
 
-        t24 = {'trigger': 'modename',
+        t24 = {'trigger': 'chosen',
                'source': 'choose state',
                'target': 'waiting for command'
                }
@@ -175,7 +175,7 @@ class StateMachine_Component:
 
         # Change 4: We pass the set of states to the state machine
         machine = Machine(name='stm_traffic', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26], obj=ui,
-                          states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message])
+                          states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_and_message_listen, choose_recipient_send, record_message, replay_message, play_message])
 
     def queue_transition(self):
         if  0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.doNotDisturb or self.ui.loudnessMode):
