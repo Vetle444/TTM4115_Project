@@ -1,5 +1,9 @@
 #from ui.ui_component import *
 from mqtt.mqtt_component import *
+from audio.record_component import *
+from state_machine.state_machine_component import *
+from audio.record_component import *
+from audio.playback_component import *
 
 # Create a ui_component object
 #ui = UI_Component()

@@ -27,16 +27,16 @@ class Player:
         chunk = 1024  
 
         # Open the sound file 
-        wf = wave.open(filename, 'rb')
+        wf = wave.open(self.filename, 'rb')
 
         # Create an interface to PortAudio
         p = pyaudio.PyAudio()
 
         # Open a .Stream object to write the WAV file to
         # 'output = True' indicates that the sound will be played rather than recorded
-        stream = p.open(format = p.get_format_from_width(wf.getsampwidth()),
-                        channels = wf.getnchannels(),
-                        rate = wf.getframerate(),
+        stream = p.open(format = p.get_format_from_width(self.wf.getsampwidth()),
+                        channels = self.wf.getnchannels(),
+                        rate = self.wf.getframerate(),
                         output = True)
 
         # Read data in chunks
@@ -87,5 +87,6 @@ class Player:
 #Example
 player = Player()
 player.create_stm()
-player.start_playback()
+player.start_playback("../recorded_message.wav")
+player.stop_playback()
 """
