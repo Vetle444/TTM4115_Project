@@ -177,7 +177,7 @@ class StateMachine_Component:
                           states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_and_message_listen, choose_recipient_send, record_message, replay_message, play_message])
 
     def queue_transition(self):
-        if  0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.doNotDisturb or self.ui.loudnessMode):
+        if 0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.do_not_disturb or self.ui.loudness_mode):
             return 'play message'
         elif len(self.ui.new_msg_queue) > 5:
             self.ui.new_msg_queue = []

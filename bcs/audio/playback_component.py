@@ -20,7 +20,6 @@ class Player:
     def __init__(self):
 
         self.filename=None
-        self.wf = None
 
     def play(self):
         # Set chunk size of 1024 samples per data frame
