@@ -8,6 +8,9 @@ mqtt_client = MQTT_Client("erlend", "bla")
 broker, port = "mqtt.item.ntnu.no", 1883
 
 mqtt_client.start(broker, port)
+recorder = Recorder(mqtt_client)
+player = Player()
 
+ui = None # missing
+stm = StateMachine_Component(ui, mqtt_client, player, recorder)
 
-mqtt_client.send_file("erlend", './audio/audio.wav')
