@@ -18,11 +18,8 @@ Call stop playback
         
 class Player:
     def __init__(self):
-        self.finishedPlaying=False
         
-    def play(self):
-        """Name of wav file"""
-        filename = 'recorded_message.wav'
+    def play(self, filename):
 
         # Set chunk size of 1024 samples per data frame
         chunk = 1024  
@@ -51,7 +48,6 @@ class Player:
         # Close and terminate the stream
         stream.close()
         p.terminate()
-        self.finishedPlaying=True
 
 
     def create_stm(self):
@@ -82,9 +78,8 @@ class Player:
         print("driver stopped")
 
 """
-Example
+#Example
 player = Player()
 player.create_stm()
 player.start_playback()
-player.stop_stm()
 """
