@@ -6,6 +6,9 @@ class StateMachine_Component:
         self.ui = ui
         self.player=player
         self.mqtt=mqtt
+        self.ID = 0
+        self.new_msg_queue = []
+        self.messages = {}
 
         t0 = {'source': 'initial',
               'target': 'standby',
@@ -144,7 +147,8 @@ class StateMachine_Component:
         standby = {'name': 'standby',
                     'entry': 'start_timer("t", 500)'}
 
-        waiting_for_command = {'name': 'waiting for command'}
+        waiting_for_command = {'name': 'waiting for command',
+                               'entry': 'start_timer("time_out", 500)'}
 
         toggle_general_channel = {'name': 'toggle general channel',
                    'entry': 'self.channel_name = self.ui.get_valid_new_channel_name'}
@@ -196,7 +200,7 @@ class StateMachine_Component:
         del self.ui.new_msg_queue[0]
 
     def increment_ID(self):
-        ID = ID + 1
+        self.ID = self.ID + 1
 
     def recorded_message_too_long(self):
         print("Message too long, try again") #read
@@ -207,3 +211,7 @@ class StateMachine_Component:
             return "toggle general channel"
         else:
             return "waiting for command"
+
+    def add_message(self, message):
+        self.new_msg_queue.append(message)
+        self.messages['message.channel'] =
