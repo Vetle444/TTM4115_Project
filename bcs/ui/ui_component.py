@@ -1,4 +1,5 @@
 from appJar import gui
+from bcs.mqtt import message_component
 
 
 class UI_Component:
@@ -6,18 +7,16 @@ class UI_Component:
         '''
         UI driver for the application BCS.
         '''
-        self.channels = []  # All mqtt channels
-        self.receivingChannels = []  # Channels chosen for subscribing
-        self.recipientChannels = []  # Channels chosen for sending
+        self.channels = []  # All mqtt channels (type string)
+        self.receivingChannels = []  # Channels chosen for subscribing (type string)
+        self.recipientChannels = []  # Channels chosen for sending (type string)
 
-        # Channels containing incoming messages
-        self.channelsWithMessages = []
-        # All the incoming messages containing in the channel selected
-        self.messagesInChannel = []
-        # Title has the channel name in it, hence dynamic title, so cannot fetch sub window by name
+        self.channelsWithMessages = []  # Channels containing incoming messages (type dict, key=channel, val=msg)
+        self.messagesInChannel = []  # All the incoming messages in the selected channel (type list of msg)
+        # Title has the channel name in it, hence dynamic title, so cannot fetch sub window by name (type string)
         self.selectedChannel = None
 
-        self.create_gui()
+        #self.create_gui()
 
     def CreateStandbySubWindow(self):
         self.app.startSubWindow("Standby")
@@ -125,20 +124,20 @@ class UI_Component:
         '''
         print("CreateNewMessagesPerChannelWindow is called")
         self.app.startSubWindow("New messages per channel")
-        # TODO: Fetch channels that have messages
+        # TODO: Fetch channels that have messages (set self.channelsWithMessages)
 
         self.app.startLabelFrame("Select channel", 0, 0)
         self.app.startScrollPane("ChannelMessagesPane")
 
-        for c in range(len(self.channelsWithMessages)):
-            self.app.addNamedButton(self.channelsWithMessages[c], self.channelsWithMessages[c] + "_withMessage",
-                                    lambda x, i=c: self.onViewMessagesWithNewMessages(self.channelsWithMessages[i]))
+        for channel in self.channelsWithMessages.keys():
+            self.app.addNamedButton(channel, channel + "_withMessage",
+                                    lambda x, i=channel: self.onViewMessagesWithNewMessages(channel))
 
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
 
         self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel",
-                                self.OnCancelMessagesPerChannelSubWindow, len(self.channelsWithMessages), 1)
+                                self.OnCancelMessagesPerChannelSubWindow, len(self.channelsWithMessages.keys()), 1)
         self.app.stopSubWindow()
         self.app.showSubWindow("New messages per channel")
 
@@ -156,9 +155,9 @@ class UI_Component:
         self.app.startScrollPane("MessagesPane")
 
         print("displying all messages from channel{}".format(channel))
-        for m in range(len(self.messagesInChannel)):
-            self.app.addNamedButton("Message " + str(m), self.messagesInChannel[m] + "_message" + str(m),
-                                    lambda x, i=m: self.onViewMessage(self.channelsWithMessages[i]))
+        for msg in self.channelsWithMessages[channel]:
+            self.app.addNamedButton("Message " + str(msg), msg + "_message" + str(msg),
+                                    lambda x, i=msg: self.onViewMessage(msg))
 
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
@@ -193,7 +192,8 @@ class UI_Component:
     def OnPlayMessage(self, message):
         # Should play the message
         # TODO: Play back message, call peer class
-        print("Playing message")
+        print("Playing the message")
+        print(message)
         return None
 
     def OnCancelPlayMessage(self):
@@ -326,11 +326,25 @@ class UI_Component:
         self.app.hideSubWindow(fromSubWindow)
         self.app.showSubWindow(toSubWindow)
 
+    def generate_channel_with_messages(self):
+        # ONLY FOR DEBUGGING
+        d = {}
+        for i in range(5):
+            d["kanal {}".format(str(i))] = []
+            for j in range (5):
+                m = message_component.Message("melding {}".format(str(j)), "idxyz123", "url")
+                d["kanal {}".format(str(i))].append(m)
+        return d
+
+
 '''
 channels = []
 for i in range(50):
     channels.append("Test" + str(i))
 '''
 test = UI_Component()
+d= test.generate_channel_with_messages()
+for k, v in d.items():
+    print(str(v))
 
 print("LUL")
