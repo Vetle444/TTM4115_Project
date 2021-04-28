@@ -290,6 +290,7 @@ class StateMachine_Component:
         p.terminate()
         self.driver.send('done', 'stm')
 
+
     def setUI(self,ui):
         self.ui=ui
 

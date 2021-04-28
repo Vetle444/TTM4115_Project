@@ -7,6 +7,7 @@ class UI_Component:
         '''
         UI driver for the application BCS.
         '''
+        self.stm = None
         self.channels = []  # All mqtt channels (type string)
         self.receivingChannels = []  # Channels chosen for subscribing (type string)
         self.recipientChannels = []  # Channels chosen for sending (type string)
@@ -309,6 +310,9 @@ class UI_Component:
     def OnCancelChooseRecipient(self):
         self.app.destroySubWindow("Choose recipient")
         self.app.showSubWindow("Main menu")
+        
+    def OnNotifyStmToggleReceivingChannel(self):
+        self.stm.stm.send("toggle_channel")
 
     def create_gui(self):
         self.app = gui()
@@ -343,7 +347,7 @@ channels = []
 for i in range(50):
     channels.append("Test" + str(i))
 '''
-test = UI_Component()
+#test = UI_Component()
 '''
 d= test.generate_channel_with_messages()
 for k, v in d.items():
@@ -351,4 +355,3 @@ for k, v in d.items():
         print(m)
 '''
 
-print("LUL")
