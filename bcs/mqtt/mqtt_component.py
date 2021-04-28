@@ -29,7 +29,7 @@ class MQTT_Client:
     or send messages via the functions
     """
 
-    def __init__(self, user_name, stm):
+    def __init__(self, user_name):
         self.count = 0
         self.client = mqtt.Client()
         self.client.on_connect = self.on_connect
@@ -37,7 +37,7 @@ class MQTT_Client:
         self.user_name = user_name
         self.prefix = "/group17/"
         self.message_count = 0
-        self.stm = stm
+        self.stm = None
         self.channel_list = []
         self.message_storage = "./messages/"
         if not os.path.exists(os.path.dirname(self.message_storage)):
@@ -116,3 +116,6 @@ class MQTT_Client:
 
     def get_channels(self):
         return self.channel_list
+
+    def setStm(self,stm):
+        self.stm=stm

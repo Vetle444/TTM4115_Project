@@ -1,16 +1,19 @@
 from stmpy import Machine, Driver
+import pyaudio
+import wave
 
 class StateMachine_Component:
 
-    def __init__(self, ui, mqtt, player, recorder):
-        self.ui = ui
-        self.player = player
-        self.recorder = recorder
-        self.mqtt = mqtt
+    def __init__(self):
+        self.ui = None
+        self.recorder = None
+        self.mqtt = None
         self.ID = 0
         self.new_msg_queue = [] #play, List of new messages.
         self.messages = {}  #replay, Dictionary contains all saved messages
         self.recipient = None
+        self.subscribed=None
+        self.driver=None
 
         t0 = {'source': 'initial',
               'target': 'standby',
@@ -25,7 +28,7 @@ class StateMachine_Component:
               'function': 'queue_transition'
               }
         t3 = {'trigger': 'next',
-              'source': 'play message',
+              'source': 'play_action',
               'target': 'play message',
               'effect': "delete_first_msg_queue"
               }
@@ -41,7 +44,7 @@ class StateMachine_Component:
         t6 = {'trigger': 'stop_message',
               'source': 'recording message',
               'target': 'waiting for command',
-              'effect': 'recorder.stop_recording(*)'
+              'effect': 'self.recorder.stop_recording(*)'
               }
 
   #      t7 = {'trigger': 't', # Starts timer on entry recording message if reaches 60s message is to long
@@ -50,12 +53,12 @@ class StateMachine_Component:
      #         'effect': "recorded_message_too_long"}
 
         t8 = {'trigger': 'answer',
-              'source': 'replay message',
+              'source': 'play_action',
               'target': 'recording message'
               }
         t9 = {'trigger': 'skip',
-              'source': 'replay message',
-              'function': 'replay_skip_function'
+              'source': 'replay action',
+              'function': 'replay_next_function'
               }
 
         t10 = {'trigger': 'cancel',
@@ -89,7 +92,7 @@ class StateMachine_Component:
                }
         t16 = {'trigger': 'send',
                'source': 'waiting for command',
-               'target': 'choose recipient'
+               'target': 'choose recipient send'
                }
 
         t17 = {'trigger': 'cancel',
@@ -105,11 +108,12 @@ class StateMachine_Component:
 
         t19 = {'trigger': 'channel_valid',
                'source': 'choose recipient send',
-               'target': 'replay message'
+               'target': 'recording message'
                }
+
         t20 = {'trigger': 'listen',
                'source': 'waiting for command',
-               'target': 'choose recipient'
+               'target': 'choose recipient listen'
                }
 
         t21 = {'trigger': 'cancel',
@@ -119,7 +123,7 @@ class StateMachine_Component:
 
         t22 = {'trigger': 'done',
                'source': 'toggle general channel',
-               'function': 'toggle_channel_choice(*)'
+               'effect': 'toggle_channel_subscribe(*)'
                }
 
         t23 = {'trigger': 'cancel',
@@ -141,6 +145,14 @@ class StateMachine_Component:
                'source': 'replay message',
                'target': 'waiting for command'
                }
+        t27={'trigger': 'done',
+               'source': 'play message',
+               'target': 'play_action'
+               }
+        t28={'trigger': 'done',
+               'source': 'play message',
+               'target': 'play_action'
+               }
 
         # the states:
         standby = {'name': 'standby',
@@ -150,7 +162,7 @@ class StateMachine_Component:
                                'entry': 'start_timer("time_out", 500)'}
 
         toggle_general_channel = {'name': 'toggle general channel',
-                   'entry': 'self.channel_name = self.ui.get_valid_new_channel_name'}
+                   'entry': ''}
 
         choose_state = {'name': 'choose state',
                         'entry': 'self.ui.choose_state'}
@@ -171,6 +183,10 @@ class StateMachine_Component:
 
         play_message = {'name': 'play message',
                           'entry': 'self.play_message_from_queue()'}
+        play_action = {'name': 'play_action',
+                          'entry': 'self.ui.showControls'}
+        replay_action = {'name': 'replay_action',
+                          'entry': 'self.ui.showControls'}
 
         # Change 4: We pass the set of states to the state machine
         stm = Machine(name='stm_bcs', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27], obj=ui,
@@ -231,9 +247,8 @@ class StateMachine_Component:
         self.play(self.new_msg_queue[0].play())
         self.recipient = self.new_msg_queue[0].channel_name #Used for answer
 
-    def replay_message_from_dict(self):
-        index= self.ui.index  #RETRIEVE VARIABLE FROM UI COMPONENT
-        self.player.play(self.messages[self.recipient][index].play())
+    def replay_message_from_message(self, message):
+        self.play(message.play())
 
     def choose_channel_send(self):
         #ui chose channel returns a list of channels,
