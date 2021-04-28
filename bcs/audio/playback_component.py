@@ -21,7 +21,7 @@ class Player:
 
         self.filename=None
 
-    def play(self):
+    def play(self, filename):
         # Set chunk size of 1024 samples per data frame
         chunk = 1024  
 
@@ -48,7 +48,7 @@ class Player:
             #    break
             stream.write(data)
             data = wf.readframes(chunk)
-
+        print("ferdig") #Send done to other stm
         # Close and terminate the stream
         stream.close()
         p.terminate()
@@ -79,8 +79,8 @@ class Player:
         self.driver.send('start', 'stm')
 
     def stop_playback(self):
-        self.driver.send('stop', 'stm')
-        print("driver stopped?")
+        self.driver.send('done', 'stm')
+        print("stop playback")
 
 """
 #Example
