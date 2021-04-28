@@ -142,7 +142,7 @@ class StateMachine_Component:
                }
 
         t26 = {'trigger': 'cancel',
-               'source': 'replay message',
+               'source': 'replay action',
                'target': 'waiting for command'
                }
         t27={'trigger': 'done',
@@ -150,8 +150,8 @@ class StateMachine_Component:
                'target': 'play_action'
                }
         t28={'trigger': 'done',
-               'source': 'play message',
-               'target': 'play_action'
+               'source': 'replay message',
+               'target': 'replay action'
                }
 
         # the states:
