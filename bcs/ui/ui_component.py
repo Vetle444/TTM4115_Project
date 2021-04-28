@@ -1,5 +1,5 @@
 from appJar import gui
-from bcs.mqtt import message_component
+#from bcs.mqtt import message_component
 
 
 class UI_Component:
@@ -7,13 +7,21 @@ class UI_Component:
         '''
         UI driver for the application BCS.
         '''
-        self.stm = None
-        self.channels = []  # All mqtt channels (type string)
-        self.receivingChannels = []  # Channels chosen for subscribing (type string)
-        self.recipientChannels = []  # Channels chosen for sending (type string)
+        print("Created UI_component")
 
-        self.channelsWithMessages = []  # Channels containing incoming messages (type dict, key=channel, val=msg)
-        self.messagesInChannel = []  # All the incoming messages in the selected channel (type list of msg)
+    def start(self):
+        #self.stm_component = None
+        
+        self.channels = []  # All mqtt channels (type string)
+        # Channels chosen for subscribing (type string)
+        self.receivingChannels = []
+        # Channels chosen for sending (type string)
+        self.recipientChannels = []
+
+        # Channels containing incoming messages (type dict, key=channel, val=msg)
+        self.channelsWithMessages = []
+        # All the incoming messages in the selected channel (type list of msg)
+        self.messagesInChannel = []
         # Title has the channel name in it, hence dynamic title, so cannot fetch sub window by name (type string)
         self.selectedChannel = None
 
@@ -21,7 +29,7 @@ class UI_Component:
 
     def CreateStandbySubWindow(self):
         self.app.startSubWindow("Standby")
-        self.app.addButton('Wake device', self.OnWake)
+        self.app.addButton('Wake device', self.OnWakeNotifyStm)
         self.app.stopSubWindow()
 
     def CreateCommandSubWindow(self):
@@ -176,7 +184,8 @@ class UI_Component:
         '''
         Plays back a selected message
         '''
-        self.app.startSubWindow("Message from channel {}".format(self.selectedChannel))
+        self.app.startSubWindow(
+            "Message from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.startFrame("PlaybackButtons", 1, 1)
 
@@ -236,8 +245,9 @@ class UI_Component:
         self.SwitchWindow("Stop recording and send", "Main menu")
         self.app.destroySubWindow("Choose recipient")
 
-    def OnWake(self):
-        self.SwitchWindow("Standby", "Main menu")
+    def OnWakeNotifyStm(self):
+        self.stm_component.stm.send("wakeword")
+        #self.SwitchWindow("Standby", "Main menu")
 
     def OnChooseMode(self):
         # TODO: Change mode in peer class (or skip)
@@ -310,9 +320,9 @@ class UI_Component:
     def OnCancelChooseRecipient(self):
         self.app.destroySubWindow("Choose recipient")
         self.app.showSubWindow("Main menu")
-        
+
     def OnNotifyStmToggleReceivingChannel(self):
-        self.stm.stm.send("toggle_channel")
+        self.stm_component.stm.send("toggle_channel")
 
     def create_gui(self):
         self.app = gui()
@@ -336,8 +346,9 @@ class UI_Component:
         d = {}
         for i in range(5):
             d["kanal {}".format(str(i))] = []
-            for j in range (5):
-                m = message_component.Message("channel {}".format(str(i)), "id_k{}_m{}".format(i, j), "some_url")
+            for j in range(5):
+                m = message_component.Message("channel {}".format(
+                    str(i)), "id_k{}_m{}".format(i, j), "some_url")
                 d["kanal {}".format(str(i))].append(m)
         return d
 
@@ -354,4 +365,3 @@ for k, v in d.items():
     for m in v:
         print(m)
 '''
-
