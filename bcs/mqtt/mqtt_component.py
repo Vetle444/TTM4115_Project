@@ -104,7 +104,7 @@ class MQTT_Client:
         self.client.connect(broker, port)
 
         self.client.subscribe(self.prefix + self.user_name)
-        self.client.subscribe(self.prefix + "channel_list")
+        self.client.subscribe(self.prefix + "channel_list") #Subscribe to channel that sends all channel information
 
         try:
             # line below should not have the () after the function!
@@ -113,3 +113,6 @@ class MQTT_Client:
         except KeyboardInterrupt:
             print("Interrupted")
             self.client.disconnect()
+
+    def get_channels(self):
+        return self.channel_list

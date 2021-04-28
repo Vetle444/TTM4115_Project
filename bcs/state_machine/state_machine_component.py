@@ -8,8 +8,8 @@ class StateMachine_Component:
         self.recorder = recorder
         self.mqtt = mqtt
         self.ID = 0
-        self.new_msg_queue = []
-        self.messages = {}
+        self.new_msg_queue = [] #play
+        self.messages = {}  #replay
         self.recipient = None
 
         t0 = {'source': 'initial',
@@ -167,7 +167,7 @@ class StateMachine_Component:
 
 
         replay_message = {'name': 'replay message',
-                          'entry': 'self.replay_message_from_dict()'}# TODO move to transition??
+                          'entry': 'self.replay_message_from_dict()'}
 
         play_message = {'name': 'play message',
                           'entry': 'self.play_message_from_queue()'}
@@ -180,11 +180,12 @@ class StateMachine_Component:
         if 0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.do_not_disturb or self.ui.loudness_mode):
             return 'play message'
         elif len(self.ui.new_msg_queue) > 5:
+            #Delete queue
             self.ui.new_msg_queue = []
             # read
             return 'waiting_for_command'
         else:
-            return 'play message'
+            return 'standby'
 
     def replay_skip_function(self):
         if self.ID < self.ui.new_msg_queue[-1]:
