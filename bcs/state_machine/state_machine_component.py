@@ -26,7 +26,7 @@ class StateMachine_Component:
               }
         t2 = {'trigger': 't',
               'source': 'standby',
-              'function': 'queue_transition'
+              'function': self.compound_transition_msg_queue
               }
         t3 = {'trigger': 'next',
               'source': 'play action',
@@ -201,19 +201,19 @@ class StateMachine_Component:
         self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28], obj=self.ui, states=[
                            standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
 
-    def queue_transition(self):
-        if 0 < len(self.ui.new_msg_queue) <= 5 and not (self.ui.do_not_disturb or self.ui.loudness_mode):
+    def compound_transition_msg_queue(self):
+        if 0 < len(self.new_msg_queue) <= 5 and not (self.ui.do_not_disturb or self.ui.loudness_mode):
             return 'play message'
-        elif len(self.ui.new_msg_queue) > 5:
+        elif len(self.new_msg_queue) > 5:
             # Delete queue
-            self.ui.new_msg_queue = []
+            self.new_msg_queue = []
             # read
             return 'waiting for command'
         else:
             return 'standby'
 
     """
-    def replay_skip_function(self):
+    def compound_transition_replay_end(self):
         if self.ID < self.ui.new_msg_queue[-1]:
             self.ID += 1
             return "replay message"

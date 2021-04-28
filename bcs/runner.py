@@ -1,10 +1,12 @@
 #from ui.ui_component import *
+import logging
+
 from ui.ui_component import UI_Component
 from mqtt.mqtt_component import *
 from audio.record_component import *
 from state_machine.state_machine_component import *
 from audio.record_component import *
-
+import threading
 
 driver = Driver()  # Driver for stm
 
@@ -31,7 +33,10 @@ mqtt_client.setStm(stm_component)
 
 print("runner: Setup complete, starting system...")
 # Start components
+driver._logger.setLevel(logging.DEBUG)
 driver.start()
 mqtt_client.start(broker, port)
 
-ui.start()
+#ui.start()
+x = threading.Thread(target=ui.start)
+x.start()
