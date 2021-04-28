@@ -26,7 +26,7 @@ class Message:
 
     def __str__(self):
         s = "ID is: {}\nIs new: {}\nChannel name: {}\nAudio file path: {}".format(
-            self.id, self.new, self.channel_name, self.audio_file_path)
+            self.ID, self.new, self.channel_name, self.audio_file_path)
         return s
 
     def play(self):
