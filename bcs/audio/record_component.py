@@ -42,9 +42,7 @@ class Recorder:
             s_recording, s_processing], obj=self)
         self.stm = stm
 
-        self.driver = Driver()
-        self.driver.add_machine(stm)
-        self.driver.start()
+        self.driver=None
 
     def record(self):
         print("recording")
@@ -94,6 +92,9 @@ class Recorder:
     def stop_recording(self, channel_name):
         self.channel_name = channel_name
         self.driver.send('stop', 'stm')
+
+    def setDriver(self,driver):
+        self.driver=driver
 
 
 # Example code
