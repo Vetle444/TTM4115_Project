@@ -16,7 +16,7 @@ class UI_Component:
         # Title has the channel name in it, hence dynamic title, so cannot fetch sub window by name (type string)
         self.selectedChannel = None
 
-        #self.create_gui()
+        self.create_gui()
 
     def CreateStandbySubWindow(self):
         self.app.startSubWindow("Standby")
@@ -123,8 +123,9 @@ class UI_Component:
         Displays a list of all channels with new messages
         '''
         print("CreateNewMessagesPerChannelWindow is called")
-        self.app.startSubWindow("New messages per channel")
         # TODO: Fetch channels that have messages (set self.channelsWithMessages)
+        self.channelsWithMessages = self.generate_channel_with_messages()
+        self.app.startSubWindow("New messages per channel")
 
         self.app.startLabelFrame("Select channel", 0, 0)
         self.app.startScrollPane("ChannelMessagesPane")
@@ -156,8 +157,8 @@ class UI_Component:
 
         print("displying all messages from channel{}".format(channel))
         for msg in self.channelsWithMessages[channel]:
-            self.app.addNamedButton("Message " + str(msg), msg + "_message" + str(msg),
-                                    lambda x, i=msg: self.onViewMessage(msg))
+            self.app.addNamedButton("Message " + msg.ID, msg.ID + "_message" + msg.ID,
+                                    lambda x, i=msg.ID: self.onViewMessage(msg))
 
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
@@ -174,7 +175,7 @@ class UI_Component:
         '''
         Plays back a selected message
         '''
-        self.app.startSubWindow("Message from channel " + self.selectedChannel)
+        self.app.startSubWindow("Message from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.startFrame("PlaybackButtons", 1, 1)
 
@@ -214,7 +215,7 @@ class UI_Component:
         # Should fint the correct channles, and pass to CreateNewMessagesPerMessageWindow
         # Should close fromCreateNewMessagesPerChannelWindow
         # TODO: Fetch messages from peer class
-        self.messagesInChannel = ["Hei", "Halloen"]
+        self.messagesInChannel = channel
         self.CreateNewMessagesPerMessageWindow(channel)
         self.app.destroySubWindow("New messages per channel")
 
@@ -332,7 +333,7 @@ class UI_Component:
         for i in range(5):
             d["kanal {}".format(str(i))] = []
             for j in range (5):
-                m = message_component.Message("melding {}".format(str(j)), "idxyz123", "url")
+                m = message_component.Message("channel {}".format(str(i)), "id_k{}_m{}".format(i, j), "some_url")
                 d["kanal {}".format(str(i))].append(m)
         return d
 
@@ -343,8 +344,11 @@ for i in range(50):
     channels.append("Test" + str(i))
 '''
 test = UI_Component()
+'''
 d= test.generate_channel_with_messages()
 for k, v in d.items():
-    print(str(v))
+    for m in v:
+        print(m)
+'''
 
 print("LUL")
