@@ -10,7 +10,7 @@ from audio.record_component import *
 import threading
 
 driver = Driver()  # Driver for stm
-
+"""
 debug_channels = {}
 debug_msg_queue = []
 for c in range(5):
@@ -19,7 +19,7 @@ for c in range(5):
         msg = Message("channel {}".format(c), "c:{}_id:{}".format(c, m), "recorded_message.wav")
         debug_msg_queue.append(msg) if m == c else None
         debug_channels["channel {}".format(c)].append(msg)
-
+"""
 # Create components
 ui = UI_Component()
 mqtt_client = MQTT_Client("erlend")
@@ -35,7 +35,7 @@ stm_component.setRecorder(recorder)
 stm_component.setUI(ui)
 
 #Example messages dictionary
-stm_component.messages = debug_channels
+#stm_component.messages = debug_channels
 
 #Example new messages list
 #stm_components.new_msg_queue = debug_msg_queue
