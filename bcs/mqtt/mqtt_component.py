@@ -65,7 +65,7 @@ class MQTT_Client:
         print("on_message(): topic: {}".format(msg.topic))
         topic = msg.topic.split("/")[-1]
         if topic == "channel_list":
-            self.channel_list = str(msg.payload).split(",")
+            self.channel_list = str(msg.payload.decode("utf-8")).split(",")
         else:
             self.message_count += 1
 
