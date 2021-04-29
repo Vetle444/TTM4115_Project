@@ -373,7 +373,7 @@ class UI_Component:
                 #self.subwindow_newMsgChannels_create()
             else:
                 self.app.showSubWindow(sub_window)
-            if self.current_subwindow in ['Choose recipient', 'Messages from channel ' + self.selectedChannel, 'New messages per channel']:
+            if not self.current_subwindow: # in ['Choose recipient', 'Messages from channel ' + self.selectedChannel, 'New messages per channel']:
                 self.app.destroySubWindow(self.current_subwindow)
             else:
                 self.app.hideSubWindow(self.current_subwindow)
