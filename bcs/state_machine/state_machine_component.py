@@ -1,3 +1,5 @@
+import time
+
 from stmpy import Machine, Driver
 import pyaudio
 import wave
@@ -15,6 +17,20 @@ class StateMachine_Component:
         self.recipient = None
         self.subscribed = None
         self.driver = None
+        self.state_to_window = {
+            #'state': 'window',
+            'standby': 'Standby',
+            'waiting for command': 'Main menu',
+            'toggle general channel': 'Select receiving channels',
+            'choose state': 'window',
+            'choose recipient listen': 'New messages per channel', #"Messages from channel " + self.selectedChannel doesnt correspond to a state
+            'choose recipient send': 'Choose recipient',
+            'record message': 'Record Message', # "Stop recording and send" doesnt correspond to a state
+            'replay message': 'window',
+            'play message': f'Message from channel {self.recipient}',
+            'play action': 'window', # no window?
+            'replay action': 'window', # no window?
+        }
 
         t0 = {'source': 'initial',
               'target': 'standby',
@@ -159,16 +175,16 @@ class StateMachine_Component:
                'target': 'play action'
                }
 
-        t29 = {'trigger': 't',
+        t29 = {'trigger': 'timeout',
                 'source': 'waiting for command',
                 'target': 'standby'}
 
         # the states:
         standby = {'name': 'standby',
-                   'entry': 'start_timer("t", 500)'}
+                   'entry': 'start_timer("t", 3000); ui_show_standby'}
 
         waiting_for_command = {'name': 'waiting for command',
-                               'entry': 'start_timer("t", 500)'}
+                               'entry': 'start_timer("timeout", 60000); ui_show_waitingForCommand'}
 
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'toggle_received_channels()'}
@@ -198,7 +214,7 @@ class StateMachine_Component:
                          'entry': 'self.ui.showControls'}
 
         # Change 4: We pass the set of states to the state machine
-        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28], obj=self.ui, states=[
+        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29], obj=self, states=[
                            standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
 
     def compound_transition_msg_queue(self):
@@ -295,6 +311,18 @@ class StateMachine_Component:
         stream.close()
         p.terminate()
         self.driver.send('done', 'stm')
+
+    def update_ui(self):
+        if self.stm.state != 'initial':
+            print(f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
+            self.ui.update(self.state_to_window[self.stm.state])
+        # DOESNT WORK because stm.state is only updated after entry actions.. :(
+
+    def ui_show_standby(self):
+        self.ui.update(self.state_to_window['standby'])
+
+    def ui_show_waitingForCommand(self):
+        self.ui.update(self.state_to_window['waiting for command'])
 
     def toggle_received_channels():
         print("toggle channels mode")

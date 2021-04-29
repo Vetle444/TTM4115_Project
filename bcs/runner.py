@@ -1,5 +1,6 @@
 #from ui.ui_component import *
 import logging
+import time
 
 from ui.ui_component import UI_Component
 from mqtt.mqtt_component import *
@@ -34,9 +35,9 @@ mqtt_client.setStm(stm_component)
 print("runner: Setup complete, starting system...")
 # Start components
 driver._logger.setLevel(logging.DEBUG)
-driver.start()
 mqtt_client.start(broker, port)
-
 #ui.start()
 x = threading.Thread(target=ui.start)
 x.start()
+time.sleep(1)
+driver.start()
