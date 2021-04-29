@@ -213,8 +213,7 @@ class UI_Component:
             "Cancel", "Cancel_replayControls", lambda: self.cancel(), 1, 1)
 
         self.app.addButton(
-            "Answer", lambda: print("Not implemented yet!"), 1, 0)
-        self.app.addLabel('l2', f'Playing message from {self.stm_component.chosen_channel}')
+            "Answer", lambda: self.stm_component.stm.send("answer"), 1, 0)
         self.app.stopFrame()
 
         self.app.stopSubWindow()
