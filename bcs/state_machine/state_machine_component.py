@@ -14,8 +14,8 @@ class StateMachine_Component:
         self.ID = 0
         self.new_msg_queue = []  # play, List of new messages.
         self.messages = {}  # replay, Dictionary contains all saved messages
-        self.recipient = None
-        self.subscribed = None
+        self.recipient = []
+        self.subscribed = []
         self.driver = None
         self.state_to_window = {
             #'state': 'window',
