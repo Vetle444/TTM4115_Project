@@ -51,17 +51,17 @@ class MQTT_Client:
         # sending hard coded channel list to simulate server component
         payload = "Test,Erlend,Group 1,Group 2"
         try:
-            self.client.publish(self.prefix + "channel_list", payload) # TODO make deferred
+            self.client.publish(self.prefix + "channel_list", payload)  # TODO make deferred
         except Exception as e:
             print(e)
 
     def on_connect(self, client, userdata, flags, rc):
         print("on_connect(): {}".format(mqtt.connack_string(rc)))
-        #self.client.subscribe(self.prefix + self.user_name)
-        #self.client.subscribe(self.prefix + "channel_list")
+        # self.client.subscribe(self.prefix + self.user_name)
+        # self.client.subscribe(self.prefix + "channel_list")
 
     def on_message(self, client, userdata, msg):
-        #check if channel is channel_list channel
+        # check if channel is channel_list channel
         print("on_message(): topic: {}".format(msg.topic))
         topic = msg.topic.split("/")[-1]
         if topic == "channel_list":
@@ -70,8 +70,8 @@ class MQTT_Client:
             self.message_count += 1
 
             # Adding ".wav" for all messages# not from "channel_list"
-            file_extension = ".wav"# if topic != "channel_list" else ""
-            file_object = open(self.message_storage + topic +
+            file_extension = ".wav"  # if topic != "channel_list" else ""
+            file_object = open(self.message_storage + topic + "-" +
                                str(self.message_count) + file_extension, "wb")
             file_object.write(msg.payload)
             file_object.close()
@@ -107,7 +107,7 @@ class MQTT_Client:
         self.client.connect(broker, port)
 
         self.client.subscribe(self.prefix + self.user_name)
-        self.client.subscribe(self.prefix + "channel_list") #Subscribe to channel that sends all channel information
+        self.client.subscribe(self.prefix + "channel_list")  # Subscribe to channel that sends all channel information
 
         try:
             # line below should not have the () after the function!
@@ -120,5 +120,5 @@ class MQTT_Client:
     def get_channels(self):
         return self.channel_list
 
-    def setStm(self,stm):
-        self.stm=stm
+    def setStm(self, stm):
+        self.stm = stm
