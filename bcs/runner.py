@@ -36,6 +36,7 @@ print("runner: Setup complete, starting system...")
 # Start components
 driver._logger.setLevel(logging.DEBUG)
 mqtt_client.start(broker, port)
+mqtt_client.create_channel_list()
 #ui.start()
 x = threading.Thread(target=ui.start)
 x.start()

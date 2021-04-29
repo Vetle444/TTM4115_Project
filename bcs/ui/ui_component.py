@@ -70,7 +70,7 @@ class UI_Component:
         self.app.stopSubWindow()
         self.app.hideSubWindow("Main menu")
 
-    def subwindow_toggleChannel_create(self):
+    def subwindow_toggleChannel_create(self, channel_list):
         '''
         Select receiving channels for listening.
         '''

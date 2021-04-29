@@ -253,7 +253,9 @@ class StateMachine_Component:
             self.mqtt.subscribe(self.recipient)
             return "waiting for command"
         """
-        self.subscribed = channel_list
+
+        for channel in self.mqtt.channel_list:
+            self.mqtt.unsubscribe(channel)
         for channel in self.subscribed:
             self.mqtt.subscribe(channel)
 
@@ -324,8 +326,23 @@ class StateMachine_Component:
     def ui_show_waitingForCommand(self):
         self.ui.update('Main menu')
 
-    def toggle_received_channels():
-        print("toggle channels mode")
+    def ui_show_toggleGeneralChannel(self):
+        self.ui.update('Select receiving channels')
+
+    def ui_show_playMessage(self):
+        self.ui.update(f'Message from channel {self.recipient}')
+
+    def ui_show_playAction(self):
+        self.ui.update('window')
+
+    def ui_show_chooseRecipientSend(self):
+        self.ui.update('Choose recipient')
+
+    def ui_show_recordingMessage(self):
+        self.ui.update('Record Message')
+
+    def ui_show_chooseRecipientListen(self):
+        self.ui.update('New messages per channel')
 
     def setUI(self, ui):
         self.ui = ui
