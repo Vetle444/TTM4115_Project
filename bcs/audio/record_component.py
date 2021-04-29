@@ -27,7 +27,7 @@ class Recorder:
         self.filename = "recorded_message.wav"
         self.p = pyaudio.PyAudio()
         self.mqtt=mqtt
-        self.channel_name=None
+        self.channel_names=[]
 
         # Make recorder state machine
         t0 = {'source': 'initial', 'target': 'ready'}
@@ -79,18 +79,19 @@ class Recorder:
         wf.writeframes(b''.join(self.frames))
         wf.close()
         print("processing done")
-        
-        self.mqtt.send_file(self.channel_name, self.filename)
+
+        for channel in self.channel_names:
+            self.mqtt.send_file(channel, self.filename)
 
     #def stop_stm(self):
     #    self.driver.stop()
     #    print("driver stopped")
 
-    def start_recording(self):
+    def start_recording(self, channel_name):
+        self.channel_names = channel_name
         self.driver.send('start', 'stm')
 
-    def stop_recording(self, channel_name):
-        self.channel_name = channel_name
+    def stop_recording(self):
         self.driver.send('stop', 'stm')
 
     def setDriver(self,driver):
@@ -101,9 +102,9 @@ class Recorder:
 """
 recorder = Recorder()
 recorder.create_stm()
-recorder.start_recording()
+recorder.start_recording([])
 time.sleep(30)
-recorder.stop_recording("channelName")
+recorder.stop_recording()
 time.sleep(2)
 # recorder.stop_stm()
 """
