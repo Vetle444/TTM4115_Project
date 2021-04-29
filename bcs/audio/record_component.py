@@ -88,8 +88,6 @@ class Recorder:
         for channel in self.channel_names:
             self.mqtt.send_file(channel, self.filename)
 
-        self.driver.send('done', 'record_stm')
-
     #def stop_stm(self):
     #    self.driver.stop()
     #    print("driver stopped")
