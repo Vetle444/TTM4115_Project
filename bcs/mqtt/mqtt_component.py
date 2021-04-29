@@ -70,13 +70,14 @@ class MQTT_Client:
             self.message_count += 1
 
             file_extension = ".wav"
-            file_object = open(self.message_storage + topic + "-" +
-                               str(self.message_count) + file_extension, "wb")
+            file_path = self.message_storage + topic + "-" + str(self.message_count) + file_extension
+            file_object = open(file_path, "wb")
+            print("saving to" + str(file_object))
             file_object.write(msg.payload)
             file_object.close()
             # message = Message(topic, self.message_count,
             #                  self.message_storage + topic + str(self.message_count) + file_extension)
-            message = Message(topic, self.message_count, file_object)
+            message = Message(topic, self.message_count, file_path)
             self.stm.add_message(message)
 
     def unsubscribe(self, channel_name):
