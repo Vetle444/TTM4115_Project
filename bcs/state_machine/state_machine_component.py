@@ -89,7 +89,7 @@ class StateMachine_Component:
 
         t10 = {'trigger': 'cancel',
                'source': 'play action',
-               'target': 'waiting for command',
+               'target': 'standby',
                'effect': 'delete_first_msg_queue'
                }
         t11 = {'trigger': 'toggle_channel',

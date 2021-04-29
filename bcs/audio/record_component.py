@@ -97,6 +97,7 @@ class Recorder:
     def stop_recording(self):
         self.driver.send('stop', 'record_stm')
 
+
     def setDriver(self,driver):
         self.driver=driver
 
