@@ -223,7 +223,7 @@ class StateMachine_Component:
                           'entry': 'ui_show_replay_message;replay_message()'}
 
         play_message = {'name': 'play message',
-                        'entry': 'ui_show_play_message;play_message_from_queue()'}
+                        'entry': 'ui_show_play_message;play_message_from_queue'}
 
         play_action = {'name': 'play action',
                        'entry': 'ui_show_play_action'}
@@ -360,8 +360,8 @@ class StateMachine_Component:
         self.ui.update('Select receiving channels')
         print("In select receiving channels")
 
-    def ui_show_playMessage(self):
-        self.ui.update(f'Message from channel {self.chosen_channel}')
+    def ui_show_play_message(self):
+        self.ui.update('Playing message')
         print("Playing message")
 
     def ui_show_playAction(self):
@@ -387,7 +387,7 @@ class StateMachine_Component:
         self.ui.update('Messages from channel')
 
     def ui_show_play_action(self):
-        self.ui.update("Play controls")
+        self.ui.update("Replay controls")
 
     def ui_show_replay_action(self):
         self.ui.update("Replay controls")
