@@ -108,18 +108,21 @@ class StateMachine_Component:
 
         t14 = {'trigger': 'finished',
                'source': 'choose recipient listen',
+               'target': 'choose message listen'
+               }
+
+        t15 = {'trigger': 'finished',
+               'source': 'choose message listen',
                'target': 'replay message'
                }
 
-        t7 = {'trigger': 'cancel',
-                'source': 'choose message listen',
-                'target': 'choose recipient listen'
-                }
-
+        """  deprecated
         t15 = {'trigger': 'choose_mode',
                'source': 'waiting for command',
                'target': 'choose state'
                }
+        """
+
         t16 = {'trigger': 'send',
                'source': 'waiting for command',
                'target': 'choose recipient send'
@@ -156,16 +159,18 @@ class StateMachine_Component:
                'effect': 'toggle_channel_subscribe',
                'target': 'waiting for command'
                }
-
+        """ deprecated
         t23 = {'trigger': 'cancel',
                'source': 'choose state',
                'target': 'waiting for command'
                }
-
+        """
+        """ deprecated
         t24 = {'trigger': 'chosen',
                'source': 'choose state',
                'target': 'waiting for command'
                }
+        """
 
         t26 = {'trigger': 'cancel',
                'source': 'replay action',
@@ -176,8 +181,8 @@ class StateMachine_Component:
                'target': 'play action'
                }
         t28 = {'trigger': 'finished',
-               'source': 'play message',
-               'target': 'play action'
+               'source': 'replay message',
+               'target': 'replay action'
                }
 
         t29 = {'trigger': 'timeout',
@@ -194,8 +199,10 @@ class StateMachine_Component:
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'ui_show_toggleGeneralChannels'}
 
+        """
         choose_state = {'name': 'choose state',
                         'entry': 'ui_show_chooseState'}
+        """
 
         choose_recipient_listen = {'name': 'choose recipient listen',
                                    'entry': 'ui_show_recipient_listen'}
@@ -210,17 +217,20 @@ class StateMachine_Component:
                           'entry': 'ui_show_replay_message;replay_message()'}
 
         play_message = {'name': 'play message',
-                        'entry': 'ui_show_play_message;self.play_message_from_queue()'}
+                        'entry': 'ui_show_play_message;play_message_from_queue()'}
 
         play_action = {'name': 'play action',
-                       'entry': 'ui_show_play_action;'}
+                       'entry': 'ui_show_play_action'}
 
         replay_action = {'name': 'replay action',
-                         'entry': 'ui_show_replay_action;'}
+                         'entry': 'ui_show_replay_action'}
+
+        choose_message_listen = {'name': 'choose message listen',
+                         'entry': 'ui_show_choose_message_listen'}
 
         # Change 4: We pass the set of states to the state machine
-        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t23, t24, t26, t27, t28, t29], obj=self, states=[
-                           standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
+        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t26, t27, t28, t29], obj=self, states=[
+                           standby, waiting_for_command, toggle_general_channel, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
 
     def compound_transition_msg_queue(self):
         if 0 < len(self.new_msg_queue) <= 5 and not (self.doNotDisturbMode or self.loudnessMode):
@@ -358,15 +368,14 @@ class StateMachine_Component:
     def ui_show_recordingMessage(self):
         self.ui.update('Record Message')
 
-    def ui_show_chooseRecipientListen(self):
+    def ui_show_recipient_listen(self):
         self.ui.update('New messages per channel')
 
     def ui_show_recipient_send(self):
         self.ui.update('Choose recipient')
 
-    def ui_show_ReplayMessage(self):
-        pass # TODO
-        #self.ui.update('window')
+    def ui_show_replay_message(self):
+        self.ui.update('Playing message')
 
     def ui_show_ReplayAction(self):
         pass # TODO
@@ -376,6 +385,14 @@ class StateMachine_Component:
         # TODO
         pass
         #self.ui.update('window')
+    def ui_show_choose_message_listen(self):
+        self.ui.update('Messages from channel')
+
+    def ui_show_play_action(self):
+        self.ui.update("Play controls")
+
+    def ui_show_replay_action(self):
+        self.ui.update("Play controls")
 
     def setUI(self, ui):
         self.ui = ui

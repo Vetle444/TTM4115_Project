@@ -143,7 +143,7 @@ class UI_Component:
         '''
         print("CreateNewMessagesPerChannelWindow is called")
         # TODO: Fetch channels that have messages (set self.channelsWithMessages)
-        self.channelsWithMessages = self.generate_channel_with_messages()
+        # self.channelsWithMessages = self.stm_component.messages
         self.app.startSubWindow("New messages per channel")
 
         self.app.startLabelFrame("Select channel", 0, 0)
@@ -226,7 +226,7 @@ class UI_Component:
         # Called from Waiting for command, displays channels with new messages (calls CreateNewMessagesPerChannelWindow)
         print("onViewChannelsWithNewMessages called")
         # TODO: Fetch channels from peer class
-        self.channelsWithMessages = ["Test1", "Test2"]
+        # self.channelsWithMessages = self.stm_component.messages.keys()
         self.app.hideSubWindow("Waiting for command")
         self.subwindow_newMsgChannels_create()
 
