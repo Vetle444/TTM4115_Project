@@ -78,7 +78,7 @@ class UI_Component:
         for i in range(50):  # TODO: Remove before prod
             self.channels.append("Test" + str(i))
 
-        # TODO: Call peer class to get channels, and set self.channels
+        # TODO: Call peer class to get channels, anwd set self.channels
         self.app.startSubWindow("Select receiving channels")
         self.app.startScrollPane("ChannelPane")
 
@@ -367,10 +367,7 @@ channels = []
 for i in range(50):
     channels.append("Test" + str(i))
 '''
-#test = UI_Component()
 '''
-d= test.generate_channel_with_messages()
-for k, v in d.items():
-    for m in v:
-        print(m)
+test = UI_Component()
+test.start()
 '''
