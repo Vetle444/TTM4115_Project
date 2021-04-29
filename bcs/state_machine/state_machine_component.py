@@ -102,7 +102,7 @@ class StateMachine_Component:
                # read here
                }
 
-        t14 = {'trigger': 'channel_valid',
+        t14 = {'trigger': 'finished',
                'source': 'choose recipient listen',
                'target': 'replay message'
                }
@@ -202,7 +202,7 @@ class StateMachine_Component:
                           'entry': "ui_show_recording_message;self.recorder.start_recording()"}
 
         replay_message = {'name': 'replay message',
-                          'entry': 'ui_show_replay_message;self.replay_message_from_dict()'}
+                          'entry': 'ui_show_replay_message;self.replay_message()'}
 
         play_message = {'name': 'play message',
                         'entry': 'ui_show_play_message;self.play_message_from_queue()'}
@@ -271,8 +271,8 @@ class StateMachine_Component:
         self.play(self.new_msg_queue[0].play())
         self.recipient = self.new_msg_queue[0].channel_name  # Used for answer
 
-    def replay_message_from_message(self, message):
-        self.play(message.play())
+    def replay_message(self):
+        self.play(self.choosen_message.play())
 
     def choose_channel_send(self):
         # ui chose channel returns a list of channels,
