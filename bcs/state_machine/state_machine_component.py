@@ -15,6 +15,7 @@ class StateMachine_Component:
         self.new_msg_queue = []  # play, List of new messages.
         self.messages = {}  # replay, Dictionary contains all saved messages
         self.chosen_message = None
+        self.chosen_channel=None
         self.recipientList = []
         self.loudnessMode = False
         self.doNotDisturbMode = False
