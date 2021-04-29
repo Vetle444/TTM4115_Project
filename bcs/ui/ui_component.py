@@ -30,7 +30,7 @@ class UI_Component:
 
         self.subwindow_standby_create()
         self.subwindow_mainmenu_create()
-        self.subwindow_toggleChannel_create()
+        #self.subwindow_toggleChannel_create()
         self.subwindow_record_create()
         self.subwindow_stopRecording_create()
         # self.CreatePlaybackMessageWindow()
@@ -74,54 +74,57 @@ class UI_Component:
         Select receiving channels for listening.
         '''
 
-        '''
-        for i in range(50):  # TODO: Remove before prod
-            self.channels.append("Test" + str(i))
+        channel_list = self.stm_component.mqtt.channel_list
+
+        #for i in range(50):  # TODO: Remove before prod
+        #    self.channels.append("Test" + str(i))
 
         # TODO: Call peer class to get channels, anwd set self.channels
         self.app.startSubWindow("Select receiving channels")
         self.app.startScrollPane("ChannelPane")
 
         self.app.startFrame("ChannelFrame", 0, 0)
-        for c in range(len(self.channels)):
+        for c in range(len(channel_list)):
             if c % 2:  # TODO: For adding colors later maybe(?)
-                self.app.addCheckBox(self.channels[c], c, 1)
+                self.app.addCheckBox(channel_list[c], c, 1)
             else:
-                self.app.addCheckBox(self.channels[c], c, 1)
+                self.app.addCheckBox(channel_list[c], c, 1)
         self.app.stopFrame()
         self.app.stopScrollPane()
 
         self.app.startFrame("ChannelButtons", 1, 1)
         self.app.addButton(
-            "Submit", self.button_submit_toggleChannel, len(self.channels), 0)
+            "Submit", lambda: self.button_submit_toggleChannel(channel_list), len(channel_list), 0)
         self.app.addButton(
-            "Cancel", self.cancel(), len(self.channels), 1)
+            "Cancel", self.cancel, len(channel_list), 1)
         self.app.stopFrame()
 
         self.app.stopSubWindow()
-        self.app.hideSubWindow("Select receiving channels")
-        '''
+        self.app.showSubWindow("Select receiving channels")
+
         return None
 
     def subwindow_chooseRecipient_create(self):
         self.app.startSubWindow("Choose recipient")
 
-        self.recipientChannels = []
+        channel_list = self.stm_component.mqtt.channel_list
 
         self.app.startScrollPane("RecipientPane")
         self.app.startFrame("RecipientFrame", 0, 0)
-        for i in range(len(self.receivingChannels)):
+        for i in range(len(channel_list)):
             self.app.addNamedCheckBox(
-                self.receivingChannels[i], self.receivingChannels[i] + "_recipient", i, 1)
+                channel_list[i], channel_list[i] + "_recipient", i, 1)
 
         self.app.stopFrame()
         self.app.stopScrollPane()
 
         self.app.startFrame("RecipientButtons", 1, 1)
-        self.app.addNamedButton("Submit", "RecipientSubmit", self.button_submit_chooseRecipient, len(
-            self.receivingChannels), 0)
-        self.app.addNamedButton("Cancel", "RecipientCancel", self.cancel(), len(
+        self.app.addNamedButton("Submit", "RecipientSubmit", lambda: self.button_submit_chooseRecipient(channel_list), len(
             self.receivingChannels), 1)
+        self.app.addNamedButton("Cancel", "RecipientCancel", self.cancel, len(
+            self.receivingChannels), 0)
+
+        self.app.showSubWindow("Choose recipient")
 
     def subwindow_record_create(self):
         self.app.startSubWindow("Record Message")
@@ -161,7 +164,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel",
-                                self.cancel(), len(self.channelsWithMessages.keys()), 1)
+                                self.cancel, len(self.channelsWithMessages.keys()), 1)
         self.app.stopSubWindow()
         self.app.showSubWindow("New messages per channel")
 
@@ -172,8 +175,7 @@ class UI_Component:
         # TODO: Fetch incoming message(s) from selected channel
 
         self.selectedChannel = channel
-        self.app.startSubWindow(
-            "Messages from channel " + self.selectedChannel)
+        self.app.startSubWindow("Messages from channel")
 
         self.app.startLabelFrame("Select message", 0, 0)
         self.app.startScrollPane("MessagesPane")
@@ -190,7 +192,7 @@ class UI_Component:
             self.messagesInChannel), 1)
 
         self.app.stopSubWindow()
-        self.app.showSubWindow("Messages from channel " + self.selectedChannel)
+        self.app.showSubWindow("Messages from channel")
 
         return None
 
@@ -248,10 +250,11 @@ class UI_Component:
 
     def onViewMessage(self, message):
         print("onViewMessage called")
-        self.app.destroySubWindow(
-            "Messages from channel " + self.selectedChannel)
-        self.subwindow_message_create(message)
-
+        self.stm_component.chosen_message = message
+        self.stm_component.stm.send('finished')
+        #self.app.destroySubWindow(
+        #    "Messages from channel")
+        #self.subwindow_message_create(message)
         return None
 
     def button_stopRecording_stopRecord(self):
@@ -274,9 +277,10 @@ class UI_Component:
     #    self.app.showSubWindow("Waiting for command")
 
     def button_cancel_newMsgMessages(self):
-        self.app.destroySubWindow(
-            "Messages from channel " + self.selectedChannel)
-        self.subwindow_newMsgChannels_create()
+        self.cancel()
+        #self.app.destroySubWindow(
+        #    "Messages from channel")
+        #self.subwindow_newMsgChannels_create()
 
     def button_send_mainmenu(self):
         self.stm_component.stm.send("send")
@@ -302,19 +306,20 @@ class UI_Component:
         self.SwitchWindow("Record Message", "Stop recording and send")
 
     # Subscribing channels
-    def button_submit_toggleChannel(self):
+    def button_submit_toggleChannel(self, channel_list):
         # TODO
-        for i in range(len(self.channels)):
-            if(self.app.getCheckBox(self.channels[i]) and self.channels[i] not in self.receivingChannels):
-                self.receivingChannels.append(self.channels[i])
+
+
+        for i in range(len(channel_list)):
+            if(self.app.getCheckBox(channel_list[i]) and channel_list[i] not in self.stm_component.subscribed):
+                self.stm_component.subscribed.append(channel_list[i])
             # Remove if unticked checkbox that was already ticked when moved into subWindow
-            elif(self.app.getCheckBox(self.channels[i]) == False and self.channels[i] in self.receivingChannels):
-                self.receivingChannels.remove(self.channels[i])
+            elif(self.app.getCheckBox(channel_list[i]) == False and channel_list[i] in self.stm_component.subscribed):
+                self.stm_component.subscribed.remove(channel_list[i])
 
-        print(self.receivingChannels)
+        print(self.stm_component.subscribed)
 
-        self.SwitchWindow("Select receiving channels", "Waiting for command")
-
+        self.stm_component.stm.send("finished")
         return None
 
     def button_cancel_toggleChannel(self):
@@ -326,15 +331,18 @@ class UI_Component:
         self.SwitchWindow("Select receiving channels", "Waiting for command")
 
     # Sending channels
-    def button_submit_chooseRecipient(self):
+    def button_submit_chooseRecipient(self, channel_list):
         # TODO
-        for i in range(len(self.receivingChannels)):
-            if(self.app.getCheckBox(self.receivingChannels[i] + "_recipient")):
-                self.recipientChannels.append(self.receivingChannels[i])
+        for i in range(len(channel_list)):
+            if(self.app.getCheckBox(channel_list[i] + "_recipient")):
+                self.stm_component.recipientList.append(channel_list[i])
 
-        print(self.recipientChannels)
+        print(self.stm_component.recipientList)
+
         self.app.destroySubWindow("Choose recipient")
         self.app.showSubWindow("Record Message")
+
+        self.stm_component.stm.send("finished")
 
     #def button_cancel_chooseRecipient(self):
     #    self.app.destroySubWindow("Choose recipient")
@@ -362,6 +370,7 @@ class UI_Component:
 
     def update(self, sub_window, message=None, channel=None):
         print(f"UI tries to switch to subwindow {sub_window}")
+
         if sub_window != self.current_subwindow:
             print(f"updating window from {self.current_subwindow} to {sub_window}!")
             if sub_window == 'Choose recipient':
