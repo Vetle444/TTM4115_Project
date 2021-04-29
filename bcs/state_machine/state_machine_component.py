@@ -16,25 +16,26 @@ class StateMachine_Component:
         self.messages = {}  # replay, Dictionary contains all saved messages
         self.choosen_message = None
         self.recipientList = []
-        self.recipient=None
-        self.chosenMessage=None
-        self.loudnessMode=None
-        self.doNotDisturbMode=None
+        self.recipient = None
+        self.chosenMessage = None
+        # Default operation_mode is "Listen-mode". Other options are "Loudness-mode" and "Do not disturb-mode"
+        self.operation_mode = "Listen-mode"
         self.subscribed = []
         self.driver = None
         self.state_to_window = {
-            #'state': 'window',
+            # 'state': 'window',
             'standby': 'Standby',
             'waiting for command': 'Waiting for command',
             'toggle general channel': 'Select receiving channels',
             'choose state': 'window',
-            'choose recipient listen': 'New messages per channel', #"Messages from channel " + self.selectedChannel doesnt correspond to a state
+            'choose recipient listen': 'New messages per channel',
+            # "Messages from channel " + self.selectedChannel doesnt correspond to a state
             'choose recipient send': 'Choose recipient',
-            'record message': 'Record Message', # "Stop recording and send" doesnt correspond to a state
+            'record message': 'Record Message',  # "Stop recording and send" doesnt correspond to a state
             'replay message': 'window',
             'play message': f'Message from channel {self.recipient}',
-            'play action': 'window', # no window?
-            'replay action': 'window', # no window?
+            'play action': 'window',  # no window?
+            'replay action': 'window',  # no window?
         }
 
         t0 = {'source': 'initial',
@@ -68,7 +69,7 @@ class StateMachine_Component:
               'target': 'waiting for command',
               'effect': 'self.recorder.stop_recording(*)'
               }
-              
+
         ''' deprecated
         t7 = {'trigger': 't',  # Starts timer on entry recording message if reaches 60s message is to long
               'source': 'recording message',
@@ -182,8 +183,8 @@ class StateMachine_Component:
                }
 
         t29 = {'trigger': 'timeout',
-                'source': 'waiting for command',
-                'target': 'standby'}
+               'source': 'waiting for command',
+               'target': 'standby'}
 
         # the states:
         standby = {'name': 'standby',
@@ -220,11 +221,14 @@ class StateMachine_Component:
                          'entry': 'ui_show_replay_action;'}
 
         # Change 4: We pass the set of states to the state machine
-        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29], obj=self, states=[
-                           standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
+        self.stm = Machine(name='ui',
+                           transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19,
+                                        t20, t21, t22, t23, t24, t25, t26, t27, t28, t29], obj=self, states=[
+                standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen,
+                choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
 
     def compound_transition_msg_queue(self):
-        if 0 < len(self.new_msg_queue) <= 5 and not (self.doNotDisturbMode or self.loudnessMode):
+        if 0 < len(self.new_msg_queue) <= 5 and self.operation_mode == "Listen-mode":
             return 'play message'
         elif len(self.new_msg_queue) > 5:
             # Delete queue
@@ -243,6 +247,7 @@ class StateMachine_Component:
             print("All messages played")  # read
             return "waiting for command"
     """
+
     def delete_first_msg_queue(self):
         del self.new_msg_queue[0]
 
@@ -286,7 +291,6 @@ class StateMachine_Component:
         self.recipient = self.ui.choose_channel(self.subscribed)
     """
 
-
     def choose_channel_replay(self):
         # ui chose channel returns a list of channels, used for replay
         self.recipient = self.ui.choose_channel()
@@ -325,12 +329,13 @@ class StateMachine_Component:
 
     def update_ui(self):
         if self.stm.state != 'initial':
-            print(f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
+            print(
+                f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
             self.ui.update(self.state_to_window[self.stm.state])
         # DOESNT WORK because stm.state is only updated after entry actions.. :(
 
     def ui_show_standby(self):
-        #self.ui.start()
+        # self.ui.start()
         self.ui.update('Standby')
         print("In standby")
 
@@ -348,7 +353,7 @@ class StateMachine_Component:
 
     def ui_show_playAction(self):
         pass
-        #self.ui.update('window') # TODO does this have a window? tod   o
+        # self.ui.update('window') # TODO does this have a window? tod   o
 
     def ui_show_chooseRecipientSend(self):
         self.ui.update('Choose recipient')
@@ -363,17 +368,17 @@ class StateMachine_Component:
         self.ui.update('Choose recipient')
 
     def ui_show_ReplayMessage(self):
-        pass # TODO
-        #self.ui.update('window')
+        pass  # TODO
+        # self.ui.update('window')
 
     def ui_show_ReplayAction(self):
-        pass # TODO
-        #self.ui.update('window')
+        pass  # TODO
+        # self.ui.update('window')
 
     def ui_show_ChooseState(self):
         # TODO
         pass
-        #self.ui.update('window')
+        # self.ui.update('window')
 
     def setUI(self, ui):
         self.ui = ui

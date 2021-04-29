@@ -268,9 +268,9 @@ class UI_Component:
         #self.SwitchWindow("Standby", "Waiting for command")
 
     def button_chooseMode_mainmenu(self):
-        # TODO: Change mode in peer class (or skip)
-        # two booleans
-        print(self.app.getRadioButton("mode"))
+        selected_radio_button = self.app.getRadioButton("mode")
+        self.stm_component.operation_mode = selected_radio_button
+        print("UI set to mode: {}".format(selected_radio_button))
 
     #def OnCancelMessagesPerChannelSubWindow(self):
     #    self.app.destroySubWindow("New messages per channel")
