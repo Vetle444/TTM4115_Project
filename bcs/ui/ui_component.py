@@ -144,7 +144,7 @@ class UI_Component:
         self.app.startScrollPane("ChannelMessagesPane")
 
         for channel in self.stm_component.messages.keys():
-            self.app.addNamedButton(channel, channel + "_withMessage",
+            self.app.addNamedButton(channel, channel,
                                     lambda channel=channel: self.onViewMessagesWithNewMessages(channel))
 
         self.app.stopScrollPane()

@@ -147,8 +147,7 @@ class StateMachine_Component:
         """
         t19 = {'trigger': 'finished',
                'source': 'choose recipient send',
-               'target': 'recording message',
-               'effect': 'start_recording(*)'
+               'target': 'recording message'
                }
 
         t20 = {'trigger': 'listen',
@@ -181,7 +180,7 @@ class StateMachine_Component:
 
         t26 = {'trigger': 'cancel',
                'source': 'replay action',
-               'target': 'waiting for command'
+               'target': 'choose recipient listen'
                }
         t27 = {'trigger': 'finished',
                'source': 'play message',
@@ -218,7 +217,7 @@ class StateMachine_Component:
                                  'entry': 'ui_show_recipient_send'}
 
         record_message = {'name': 'recording message',
-                          'entry': "ui_show_recording_message"}
+                          'entry': "ui_show_recording_message;start_recording()"}
 
         replay_message = {'name': 'replay message',
                           'entry': 'ui_show_replay_message;replay_message()'}
@@ -237,7 +236,7 @@ class StateMachine_Component:
 
         # Change 4: We pass the set of states to the state machine
         self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t26, t27, t28, t29], obj=self, states=[
-                           standby, waiting_for_command, toggle_general_channel, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
+                           standby, waiting_for_command, toggle_general_channel, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action, choose_message_listen])
 
     def compound_transition_msg_queue(self):
         if 0 < len(self.new_msg_queue) <= 5 and not (self.doNotDisturbMode or self.loudnessMode):
@@ -292,11 +291,11 @@ class StateMachine_Component:
         self.messages[message.channel_name].append(message)
 
     def play_message_from_queue(self):
-        self.play(self.new_msg_queue[0].play())
+        self.playMessage(self.new_msg_queue[0].play())
         self.chosen_channel = self.new_msg_queue[0].channel_name  # Used for answer
 
     def replay_message(self):
-        self.play(self.chosen_message.play())
+        self.playMessage(self.chosen_message.play())
 
     """ deprecated
         def choose_channel_send(self):
@@ -313,7 +312,7 @@ class StateMachine_Component:
     def getMessages(self):
         return self.messages
 
-    def play(self, filename):
+    def playMessage(self, filename):
         # Set chunk size of 1024 samples per data frame
         chunk = 1024
 
@@ -340,7 +339,7 @@ class StateMachine_Component:
         # Close and terminate the stream
         stream.close()
         p.terminate()
-        self.driver.send('finished', 'stm')
+        self.driver.send('finished', 'ui')
 
     def update_ui(self):
         if self.stm.state != 'initial':
@@ -372,8 +371,8 @@ class StateMachine_Component:
     def ui_show_chooseRecipientSend(self):
         self.ui.update('Choose recipient')
 
-    def ui_show_recordingMessage(self):
-        self.ui.update('Record Message')
+    def ui_show_recording_message(self):
+        self.ui.update('Recording message')
 
     def ui_show_recipient_listen(self):
         self.ui.update('New messages per channel')
@@ -384,14 +383,6 @@ class StateMachine_Component:
     def ui_show_replay_message(self):
         self.ui.update('Playing message')
 
-    def ui_show_ReplayAction(self):
-        pass # TODO
-        #self.ui.update('window')
-
-    def ui_show_ChooseState(self):
-        # TODO
-        pass
-        #self.ui.update('window')
     def ui_show_choose_message_listen(self):
         self.ui.update('Messages from channel')
 
@@ -399,7 +390,7 @@ class StateMachine_Component:
         self.ui.update("Play controls")
 
     def ui_show_replay_action(self):
-        self.ui.update("Play controls")
+        self.ui.update("Replay controls")
 
     def setUI(self, ui):
         self.ui = ui
@@ -415,3 +406,9 @@ class StateMachine_Component:
 
     def start_recording(self):
         self.recorder.start_recording(self.recipientList)
+
+    def stop_recording(self):
+        self.recorder.stop_recording()
+
+
+
