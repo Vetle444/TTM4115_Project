@@ -83,7 +83,6 @@ class Recorder:
         wf.writeframes(b''.join(self.frames))
         wf.close()
         print("processing done")
-
         for channel in self.channel_names:
             self.mqtt.send_file(channel, self.filename)
 

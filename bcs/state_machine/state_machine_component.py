@@ -292,6 +292,7 @@ class StateMachine_Component:
 
     def play_message_from_queue(self):
         self.chosen_channel = self.new_msg_queue[0].channel_name
+        self.ui_show_play_message()
         self.playMessage(self.new_msg_queue[0].play())
 
     def replay_message(self):

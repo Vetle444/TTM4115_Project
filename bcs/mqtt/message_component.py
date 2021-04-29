@@ -20,9 +20,9 @@ class Message:
         self.ID = ID
 
     # destructor that deletes message file when message object is deleted
-    #def __del__(self):
-    #    print(f"deleted message {self.ID}")
-    #    os.remove(self.audio_file_path)
+    def __del__(self):
+        print(f"deleted message {self.ID}")
+        os.remove(self.audio_file_path)
 
     def __str__(self):
         s = "ID is: {}\nIs new: {}\nChannel name: {}\nAudio file path: {}".format(

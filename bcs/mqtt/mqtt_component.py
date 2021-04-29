@@ -99,7 +99,7 @@ class MQTT_Client:
         byteArray = bytearray(audiostring)
 
         try:
-            self.client.publish(self.prefix + channel_name, byteArray)
+            self.client.publish(self.prefix + channel_name, byteArray, qos=0)
         except Exception as e:
             print(e)
 
