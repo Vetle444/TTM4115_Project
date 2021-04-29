@@ -194,6 +194,7 @@ class UI_Component:
         '''
         self.app.startSubWindow("Playing message")  # from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
+
         self.app.addLabel('l1', f'Playing message from {self.stm_component.chosen_channel}')
         self.app.stopSubWindow()
         self.app.showSubWindow("Playing message")
@@ -208,9 +209,10 @@ class UI_Component:
 
         self.app.addNamedButton(
             "Cancel", "Cancel_replayControls", lambda: self.cancel(), 1, 1)
+        if self.stm_component.mqtt.user_name != self.stm_component.chosen_channel:
+            self.app.addButton(
+                "Answer", lambda: self.stm_component.stm.send("answer"), 1, 0)
 
-        self.app.addButton(
-            "Answer", lambda: self.stm_component.stm.send("answer"), 1, 0)
         self.app.stopFrame()
 
         self.app.stopSubWindow()

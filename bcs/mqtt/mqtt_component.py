@@ -73,11 +73,7 @@ class MQTT_Client:
             file_path = self.message_storage + topic + "-" + str(self.message_count) + file_extension
             file_object = open(file_path, "wb")
             print("saving to" + str(file_object))
-            userName=msg.payload.split('-')[1]
-            if topic==self.user_name:
-                topic=userName
-            senderData=msg.payload.split('-')[0]
-            file_object.write(senderData)
+            file_object.write(msg.payload)
             file_object.close()
             # message = Message(topic, self.message_count,
             #                  self.message_storage + topic + str(self.message_count) + file_extension)
