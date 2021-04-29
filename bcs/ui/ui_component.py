@@ -358,8 +358,18 @@ class UI_Component:
         print(f"UI tries to switch to subwindow {sub_window}")
         if sub_window != self.current_subwindow:
             print(f"updating window from {self.current_subwindow} to {sub_window}!")
-            self.app.hideSubWindow(self.current_subwindow)
-            self.app.showSubWindow(sub_window)
+            if sub_window in ['']:
+
+                self.subwindow_chooseRecipient_create()
+                subwindow_chooseRecipient_create
+                self.subwindow_newMsgChannels_create()
+                self.subwindow_message_create(message)
+            else:
+                self.app.showSubWindow(sub_window)
+            if self.current_subwindow in ['Choose recipient', 'Messages from channel ' + self.selectedChannel, 'New messages per channel']:
+                self.app.destroySubWindow(self.current_subwindow)
+            else:
+                self.app.hideSubWindow(self.current_subwindow)
             self.current_subwindow = sub_window
 
     def cancel(self):
