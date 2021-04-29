@@ -66,8 +66,7 @@ class Recorder:
         # Stop and close the stream
         stream.stop_stream()
         stream.close()
-        # Terminate the PortAudio interface
-        self.p.terminate()
+
         print("stream closed")
 
     def stop(self):
