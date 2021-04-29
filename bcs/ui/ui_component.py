@@ -56,7 +56,7 @@ class UI_Component:
         self.app.startLabelFrame("Select a command", 0, 1)
         self.app.addButton('Toggle receiving channels', lambda: self.stm_component.stm.send("toggle_channel"))
         self.app.addButton('Replay old messages', lambda: self.stm_component.stm.send("listen"))
-        self.app.addButton('Record message', self.button_send_mainmenu)
+        self.app.addNamedButton('Record message', 'Record message_btn', lambda: self.stm_component.stm.send("send"))
         self.app.stopLabelFrame()
 
         self.app.stopSubWindow()
@@ -111,12 +111,12 @@ class UI_Component:
         self.app.stopScrollPane()
 
         self.app.startFrame("RecipientButtons", 1, 1)
-        '''
-        self.app.addNamedButton("Submit", "RecipientSubmit", lambda: self.button_submit_chooseRecipient(channel_list), len(
-            self.receivingChannels), 1)
-        self.app.addNamedButton("Cancel", "RecipientCancel", self.cancel, len(
-            self.receivingChannels), 0)
-        '''
+
+        self.app.addNamedButton("Record", "RecipientRecord", lambda: self.button_submit_chooseRecipient(channel_list), len(
+            channel_list), 1)
+        self.app.addNamedButton("Cancel", "RecipientCancel", lambda: self.cancel(), len(
+            channel_list), 0)
+
         self.app.showSubWindow("Choose recipient")
 
     def stop_recording(self):
@@ -127,7 +127,7 @@ class UI_Component:
         self.app.startSubWindow("Stop recording and send")
 
         self.app.addNamedButton("Stop recording and send",
-                                "StopRecordingAndSend", self.button_stopRecording_stopRecord)
+                                "StopRecordingAndSend", lambda: self.button_stopRecording_stopRecord())
 
         self.app.stopSubWindow()
 
@@ -168,8 +168,8 @@ class UI_Component:
 
         print("displying all messages from channel{}".format(self.stm_component.chosen_channel))
         for msg in self.stm_component.messages[self.stm_component.chosen_channel]:
-            self.app.addNamedButton("Message " + msg.ID, msg.ID + "_message" + msg.ID,
-                                    lambda msg=msg: self.button_selectMessage_newMsgMessages(msg))
+            self.app.addNamedButton("Message " + str(msg.ID), str(msg.ID) + "_message" + str(msg.ID),
+                                    lambda: self.button_selectMessage_newMsgMessages(msg))
 
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
@@ -246,6 +246,7 @@ class UI_Component:
 
     def button_selectMessage_newMsgMessages(self, message):
         print("onViewMessage called")
+        print(message)
         self.stm_component.chosen_message = message
         self.stm_component.stm.send('finished')
 
@@ -286,10 +287,10 @@ class UI_Component:
         #self.SwitchWindow("Record Message", "Choose recipient")
 
     # On record voice message
+    """
     def button_record_record(self):
-        # TODO: Start voice recording
-        self.SwitchWindow("Record Message", "Stop recording and send")
-
+        self.stm_component.stm.send("record")
+    """
     # Subscribing channels
     def button_submit_toggleChannel(self, channel_list):
         for channel in channel_list:
@@ -346,7 +347,6 @@ class UI_Component:
         for i in range(5):
             d["kanal {}".format(str(i))] = []
             for j in range(5):
-                m = message_component.Message("channel {}".format(
                     str(i)), "id_k{}_m{}".format(i, j), "some_url")
                 d["kanal {}".format(str(i))].append(m)
         return d

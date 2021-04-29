@@ -44,7 +44,7 @@ class Recorder:
 
         record_stm = Machine(name='record_stm', transitions=[t0, t1, t2, t3], states=[
             s_recording, s_processing, s_ready], obj=self)
-        self.stm = stm
+        self.record_stm = record_stm
 
         self.driver=None
 
@@ -109,7 +109,7 @@ class Recorder:
 """
 recorder = Recorder()
 recorder.create_stm()
-recorder.start_recording([])
+recorder.start_recording([])8
 time.sleep(30)
 recorder.stop_recording()
 time.sleep(2)
