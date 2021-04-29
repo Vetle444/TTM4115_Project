@@ -359,11 +359,11 @@ class UI_Component:
         if sub_window != self.current_subwindow:
             print(f"updating window from {self.current_subwindow} to {sub_window}!")
             if sub_window in ['']:
-
-                self.subwindow_chooseRecipient_create()
-                subwindow_chooseRecipient_create
-                self.subwindow_newMsgChannels_create()
-                self.subwindow_message_create(message)
+                pass
+                #self.subwindow_chooseRecipient_create()
+                #subwindow_chooseRecipient_create
+                #self.subwindow_newMsgChannels_create()
+                #self.subwindow_message_create(message)
             else:
                 self.app.showSubWindow(sub_window)
             if self.current_subwindow in ['Choose recipient', 'Messages from channel ' + self.selectedChannel, 'New messages per channel']:
