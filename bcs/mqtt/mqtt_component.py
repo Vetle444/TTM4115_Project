@@ -111,7 +111,6 @@ class MQTT_Client:
         self.client.subscribe(self.prefix + "channel_list")  # Subscribe to channel that sends all channel information
 
         try:
-            # line below should not have the () after the function!
             thread = Thread(target=self.client.loop_forever)
             thread.start()
         except KeyboardInterrupt:
