@@ -321,8 +321,8 @@ class StateMachine_Component:
         # DOESNT WORK because stm.state is only updated after entry actions.. :(
 
     def ui_show_standby(self):
-        self.ui.start()
-        #self.ui.update('Standby')
+        #self.ui.start()
+        self.ui.update('Standby')
         print("TEST standby")
 
     def ui_show_waitingForCommand(self):
