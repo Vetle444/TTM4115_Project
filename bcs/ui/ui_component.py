@@ -13,14 +13,6 @@ class UI_Component:
 
     def start(self):
 
-        self.channels = []  # All mqtt channels (type string)
-        # Channels chosen for subscribing (type string)
-        self.receivingChannels = []
-        # Channels chosen for sending (type string)
-        self.recipientChannels = []
-
-        # Channels containing incoming messages (type dict, key=channel, val=msg)
-        self.channelsWithMessages = []
         # All the incoming messages in the selected channel (type list of msg)
         self.messagesInChannel = []
         # Title has the channel name in it, hence dynamic title, so cannot fetch sub window by name (type string)
@@ -88,7 +80,8 @@ class UI_Component:
             if c % 2:  # TODO: For adding colors later maybe(?)
                 self.app.addCheckBox(channel_list[c], c, 1)
             else:
-                self.app.addCheckBox(channel_list[c], c, 1)
+                self.app.addCheckBox(channel, i, 1)
+            self.app.setCheckBox(channel) if channel in self.stm_component.subscribed else None
         self.app.stopFrame()
         self.app.stopScrollPane()
 
@@ -164,7 +157,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel",
-                                self.cancel, len(self.channelsWithMessages.keys()), 1)
+                                self.cancel, len(self.stm_component.messages.keys()), 1)
         self.app.stopSubWindow()
         self.app.showSubWindow("New messages per channel")
 
@@ -180,8 +173,8 @@ class UI_Component:
         self.app.startLabelFrame("Select message", 0, 0)
         self.app.startScrollPane("MessagesPane")
 
-        print("displying all messages from channel{}".format(channel))
-        for msg in self.channelsWithMessages[channel]:
+        print("displying all messages from channel{}".format(self.stm_component.chosen_channel))
+        for msg in self.stm_component.messages[self.stm_component.chosen_channel]:
             self.app.addNamedButton("Message " + msg.ID, msg.ID + "_message" + msg.ID,
                                     lambda x, i=msg.ID: self.onViewMessage(msg))
 
@@ -196,20 +189,21 @@ class UI_Component:
 
         return None
 
-    def subwindow_message_create(self, message=None):
+    def subwindow_playMessage_create(self, message=None):
         '''
         Plays back a selected message
         '''
         self.app.startSubWindow(
             "View Message")# from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
-        self.app.startFrame("PlaybackButtons", 1, 1)
+        self.app.addLabel('l1', f'Playing message from {self.stm_component.chosen_channel}')
+        #self.app.startFrame("PlaybackButtons", 1, 1)
         # TODO update here too
-        self.app.addButton(
-            "Play message", lambda: self.OnPlayMessage(message), 0, 0)
-        self.app.addNamedButton(
-            "Cancel", "CancelPlayMessage", self.button_cancel_message, 0, 1)
-        self.app.stopFrame()
+        #self.app.addButton(
+        #    "Play message", lambda: self.OnPlayMessage(message), 0, 0)
+        #self.app.addNamedButton(
+        #    "Cancel", "CancelPlayMessage", self.button_cancel_message, 0, 1)
+        #self.app.stopFrame()
 
         self.app.stopSubWindow()
         self.app.showSubWindow("Message from channel " + self.selectedChannel)
@@ -248,7 +242,7 @@ class UI_Component:
         self.stm_component.stm.send('finished')
         return None
 
-    def onViewMessage(self, message):
+    def button_selectMessage_newMsgMessages(self, message):
         print("onViewMessage called")
         self.stm_component.chosen_message = message
         self.stm_component.stm.send('finished')
@@ -307,12 +301,9 @@ class UI_Component:
 
     # Subscribing channels
     def button_submit_toggleChannel(self, channel_list):
-        # TODO
-
-
-        for i in range(len(channel_list)):
-            if(self.app.getCheckBox(channel_list[i]) and channel_list[i] not in self.stm_component.subscribed):
-                self.stm_component.subscribed.append(channel_list[i])
+        for channel in channel_list:
+            if self.app.getCheckBox(channel) and channel not in self.stm_component.subscribed:
+                self.stm_component.subscribed.append(channel)
             # Remove if unticked checkbox that was already ticked when moved into subWindow
             elif(self.app.getCheckBox(channel_list[i]) == False and channel_list[i] in self.stm_component.subscribed):
                 self.stm_component.subscribed.remove(channel_list[i])
@@ -377,10 +368,14 @@ class UI_Component:
                 self.subwindow_chooseRecipient_create()
             elif sub_window == 'New messages per channel':
                 self.subwindow_newMsgChannels_create()
-            elif sub_window == 'View Message':
-                self.subwindow_message_create(message)
+            elif sub_window == 'Replay controls':
+                self.subwindow_replayControls_create()
             elif sub_window == 'Select receiving channels':
                 self.subwindow_toggleChannel_create()
+            elif sub_window == 'Messages from channel':
+                self.subwindow_newMsgMessages_create()
+            elif sub_window == "Playing message":
+                self.subwindow_playMessage_create()
             else:
                 self.app.showSubWindow(sub_window)
             if self.current_subwindow in ['Choose recipient', 'New messages per channel', 'View Message', 'Select receiving channels']:

@@ -32,7 +32,7 @@ class StateMachine_Component:
             'choose recipient send': 'Choose recipient',
             'record message': 'Record Message', # "Stop recording and send" doesnt correspond to a state
             'replay message': 'window',
-            'play message': f'Message from channel {self.recipient}',
+            'play message': f'Message from channel {self.chosen_channel}',
             'play action': 'window', # no window?
             'replay action': 'window', # no window?
         }
@@ -112,6 +112,11 @@ class StateMachine_Component:
                'source': 'choose recipient listen',
                'target': 'replay message'
                }
+
+        t7 = {'trigger': 'cancel',
+                'source': 'choose message listen',
+                'target': 'choose recipient listen'
+                }
 
         t15 = {'trigger': 'choose_mode',
                'source': 'waiting for command',
@@ -204,7 +209,7 @@ class StateMachine_Component:
                           'entry': "ui_show_recording_message"}
 
         replay_message = {'name': 'replay message',
-                          'entry': 'ui_show_replay_message;self.replay_message()'}
+                          'entry': 'ui_show_replay_message;replay_message()'}
 
         play_message = {'name': 'play message',
                         'entry': 'ui_show_play_message;self.play_message_from_queue()'}
@@ -273,7 +278,7 @@ class StateMachine_Component:
 
     def play_message_from_queue(self):
         self.play(self.new_msg_queue[0].play())
-        self.recipient = self.new_msg_queue[0].channel_name  # Used for answer
+        self.chosen_channel = self.new_msg_queue[0].channel_name  # Used for answer
 
     def replay_message(self):
         self.play(self.chosen_message.play())
@@ -342,7 +347,7 @@ class StateMachine_Component:
         print("In select receiving channels")
 
     def ui_show_playMessage(self):
-        self.ui.update(f'Message from channel {self.recipient}')
+        self.ui.update(f'Message from channel {self.chosen_channel}')
         print("Playing message")
 
     def ui_show_playAction(self):
