@@ -344,6 +344,15 @@ class StateMachine_Component:
     def ui_show_chooseRecipientListen(self):
         self.ui.update('New messages per channel')
 
+    def ui_show_ReplayMessage(self):
+        self.ui.update('window')
+
+    def ui_show_ReplayAction(self):
+        self.ui.update('window')
+
+    def ui_show_ChooseState(self):
+        self.ui.update('window')
+
     def setUI(self, ui):
         self.ui = ui
 
