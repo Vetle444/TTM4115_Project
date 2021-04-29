@@ -14,7 +14,7 @@ class StateMachine_Component:
         self.ID = 0
         self.new_msg_queue = []  # play, List of new messages.
         self.messages = {}  # replay, Dictionary contains all saved messages
-        self.choosen_message = None
+        self.chosen_message = None
         self.recipientList = []
         self.recipient=None
         self.chosenMessage=None
@@ -88,8 +88,9 @@ class StateMachine_Component:
         """
 
         t10 = {'trigger': 'cancel',
-               'source': 'play message',
-               'target': 'waiting for command'
+               'source': 'play action',
+               'target': 'waiting for command',
+               'effect': 'delete_first_msg_queue'
                }
         t11 = {'trigger': 'toggle_channel',
                'source': 'waiting for command',
@@ -163,13 +164,8 @@ class StateMachine_Component:
                'target': 'waiting for command'
                }
 
-        t25 = {'trigger': 'cancel',
-               'source': 'recording message',
-               'target': 'waiting for command'
-               }
-
         t26 = {'trigger': 'cancel',
-               'source': 'replay message',
+               'source': 'replay action',
                'target': 'waiting for command'
                }
         t27 = {'trigger': 'finished',
@@ -220,7 +216,7 @@ class StateMachine_Component:
                          'entry': 'ui_show_replay_action;'}
 
         # Change 4: We pass the set of states to the state machine
-        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29], obj=self, states=[
+        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t23, t24, t26, t27, t28, t29], obj=self, states=[
                            standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
 
     def compound_transition_msg_queue(self):
@@ -246,8 +242,10 @@ class StateMachine_Component:
     def delete_first_msg_queue(self):
         del self.new_msg_queue[0]
 
+    """ deprecated
     def recorded_message_too_long(self):
         print("Message too long, try again")  # read
+    """
 
     def toggle_channel_subscribe(self):
         # get channels from the UI
@@ -278,7 +276,7 @@ class StateMachine_Component:
         self.recipient = self.new_msg_queue[0].channel_name  # Used for answer
 
     def replay_message(self):
-        self.play(self.choosen_message.play())
+        self.play(self.chosen_message.play())
 
     """ deprecated
         def choose_channel_send(self):
@@ -286,10 +284,11 @@ class StateMachine_Component:
         self.recipient = self.ui.choose_channel(self.subscribed)
     """
 
-
-    def choose_channel_replay(self):
+    """ deprecated
+        def choose_channel_replay(self):
         # ui chose channel returns a list of channels, used for replay
         self.recipient = self.ui.choose_channel()
+    """
 
     def getMessages(self):
         return self.messages
