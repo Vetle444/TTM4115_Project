@@ -16,7 +16,7 @@ debug_msg_queue = []
 for c in range(5):
     debug_channels["channel {}".format(c)] = []
     for m in range(5):
-        msg = Message("channel {}".format(c), "c:{}_id:{}".format(c, m), "C:/Users/marti/PycharmProjects/TTM4115_Project/bcs/audio/recorded_message.wav")
+        msg = Message("channel {}".format(c), "c:{}_id:{}".format(c, m), "recorded_message.wav")
         debug_msg_queue.append(msg) if m == c else None
         debug_channels["channel {}".format(c)].append(msg)
 
