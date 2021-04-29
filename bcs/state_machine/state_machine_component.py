@@ -65,7 +65,8 @@ class StateMachine_Component:
         t6 = {'trigger': 'stop_message',
               'source': 'recording message',
               'target': 'waiting for command',
-              'effect': 'self.recorder.stop_recording(*)'
+              'effect': 'stop_recording'
+
               }
               
         ''' deprecated

@@ -30,19 +30,19 @@ class Recorder:
         self.channel_names=[]
 
         # Make recorder state machine
-        t0 = {'source': 'initial', 'target': 'ready'}
-        t1 = {'trigger': 'start', 'source': 'ready', 'target': 'recording'}
+        t0 = {'source': 'initial', 'target': 'record_ready'}
+        t1 = {'trigger': 'start', 'source': 'record_ready', 'target': 'recording'}
         t2 = {'trigger': 'done', 'source': 'recording', 'target': 'processing'}
-        t3 = {'trigger': 'done', 'source': 'processing', 'target': 'ready'}
+        t3 = {'trigger': 'done', 'source': 'processing', 'target': 'record_ready'}
 
 
 # TODO no ready state, stuck after processing: FIXED??
 
-        s_ready = {'name': 'ready'}
+        s_ready = {'name': 'record_ready'}
         s_recording = {'name': 'recording', 'do': 'record()', "stop": "stop()"}
         s_processing = {'name': 'processing', 'do': 'process()'}
 
-        stm = Machine(name='stm', transitions=[t0, t1, t2, t3], states=[
+        record_stm = Machine(name='record_stm', transitions=[t0, t1, t2, t3], states=[
             s_recording, s_processing, s_ready], obj=self)
         self.stm = stm
 
@@ -88,7 +88,7 @@ class Recorder:
         for channel in self.channel_names:
             self.mqtt.send_file(channel, self.filename)
 
-        self.driver.send('done', 'stm')
+        self.driver.send('done', 'record_stm')
 
     #def stop_stm(self):
     #    self.driver.stop()
@@ -96,10 +96,10 @@ class Recorder:
 
     def start_recording(self, channel_name):
         self.channel_names = channel_name
-        self.driver.send('start', 'stm')
+        self.driver.send('start', 'record_stm')
 
     def stop_recording(self):
-        self.driver.send('stop', 'stm')
+        self.driver.send('stop', 'record_stm')
 
     def setDriver(self,driver):
         self.driver=driver
