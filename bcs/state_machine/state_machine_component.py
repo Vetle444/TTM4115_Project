@@ -20,7 +20,7 @@ class StateMachine_Component:
         self.state_to_window = {
             #'state': 'window',
             'standby': 'Standby',
-            'waiting for command': 'Main menu',
+            'waiting for command': 'Waiting for command',
             'toggle general channel': 'Select receiving channels',
             'choose state': 'window',
             'choose recipient listen': 'New messages per channel', #"Messages from channel " + self.selectedChannel doesnt correspond to a state
@@ -324,7 +324,7 @@ class StateMachine_Component:
         self.ui.update('Standby')
 
     def ui_show_waitingForCommand(self):
-        self.ui.update('Main menu')
+        self.ui.update('Waiting for command')
 
     def ui_show_toggleGeneralChannel(self):
         self.ui.update('Select receiving channels')

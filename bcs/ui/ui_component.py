@@ -49,7 +49,7 @@ class UI_Component:
         Main menu, for choosing all main functions. When receiving channels are chosen, 
         new messages should pop-up here.
         '''
-        self.app.startSubWindow("Main menu")
+        self.app.startSubWindow("Waiting for command")
         self.app.setSize(400, 200)
 
         self.app.startLabelFrame("Select mode", 0, 2)
@@ -67,7 +67,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.stopSubWindow()
-        self.app.hideSubWindow("Main menu")
+        self.app.hideSubWindow("Waiting for command")
 
     def subwindow_toggleChannel_create(self, channel_list):
         '''
@@ -221,14 +221,14 @@ class UI_Component:
     def button_cancel_message(self):
         self.app.destroySubWindow(
             "Message from channel " + self.selectedChannel)
-        self.app.showSubWindow("Main menu")
+        self.app.showSubWindow("Waiting for command")
 
     def button_replay_mainmenu(self):
         # Called from main menu, displays channels with new messages (calls CreateNewMessagesPerChannelWindow)
         print("onViewChannelsWithNewMessages called")
         # TODO: Fetch channels from peer class
         self.channelsWithMessages = ["Test1", "Test2"]
-        self.app.hideSubWindow("Main menu")
+        self.app.hideSubWindow("Waiting for command")
         self.subwindow_newMsgChannels_create()
 
     def onViewMessagesWithNewMessages(self, channel=None):
@@ -253,7 +253,7 @@ class UI_Component:
     def button_stopRecording_stopRecord(self):
         # TODO: Stop recording, then send with mqtt
         self.subwindow_chooseRecipient_create() # TODO put this into function to call from stm
-        self.SwitchWindow("Stop recording and send", "Main menu")
+        self.SwitchWindow("Stop recording and send", "Waiting for command")
         self.app.destroySubWindow("Choose recipient")
 
     #def button_wakeDevice_standby(self):
@@ -282,7 +282,7 @@ class UI_Component:
         #    return
 
         self.subwindow_chooseRecipient_create()
-        self.SwitchWindow("Main menu", "Choose recipient")
+        self.SwitchWindow("Waiting for command", "Choose recipient")
 
     def OnError(self, errr_title, error_msg):
         self.app.errorBox(errr_title, error_msg)
@@ -309,7 +309,7 @@ class UI_Component:
 
         print(self.receivingChannels)
 
-        self.SwitchWindow("Select receiving channels", "Main menu")
+        self.SwitchWindow("Select receiving channels", "Waiting for command")
 
         return None
 
@@ -319,7 +319,7 @@ class UI_Component:
             if(self.app.getCheckBox(self.channels[i]) == False and self.channels[i] in self.receivingChannels):
                 self.app.setCheckBox(self.channels[i], True, True)
 
-        self.SwitchWindow("Select receiving channels", "Main menu")
+        self.SwitchWindow("Select receiving channels", "Waiting for command")
 
     # Sending channels
     def button_submit_chooseRecipient(self):
