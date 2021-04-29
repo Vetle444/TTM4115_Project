@@ -16,10 +16,8 @@ class StateMachine_Component:
         self.messages = {}  # replay, Dictionary contains all saved messages
         self.chosen_message = None
         self.recipientList = []
-        self.recipient=None
-        self.chosenMessage=None
-        self.loudnessMode=None
-        self.doNotDisturbMode=None
+        self.loudnessMode = False
+        self.doNotDisturbMode = False
         self.subscribed = []
         self.driver = None
         self.state_to_window = {
@@ -191,7 +189,7 @@ class StateMachine_Component:
                    'entry': 'start_timer("t", 3000); ui_show_standby'}
 
         waiting_for_command = {'name': 'waiting for command',
-                               'entry': 'start_timer("timeout", 60000); ui_show_waitingForCommand'}
+                               'entry': 'start_timer("timeout", 15000); ui_show_waitingForCommand'}
 
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'ui_show_toggleGeneralChannels'}

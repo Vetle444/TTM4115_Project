@@ -35,11 +35,15 @@ class Recorder:
         t2 = {'trigger': 'done', 'source': 'recording', 'target': 'processing'}
         t3 = {'trigger': 'done', 'source': 'processing', 'target': 'ready'}
 
+
+# TODO no ready state, stuck after processing: FIXED??
+
+        s_ready = {'name': 'ready'}
         s_recording = {'name': 'recording', 'do': 'record()', "stop": "stop()"}
         s_processing = {'name': 'processing', 'do': 'process()'}
 
         stm = Machine(name='stm', transitions=[t0, t1, t2, t3], states=[
-            s_recording, s_processing], obj=self)
+            s_recording, s_processing, s_ready], obj=self)
         self.stm = stm
 
         self.driver=None
@@ -58,6 +62,7 @@ class Recorder:
             data = stream.read(self.chunk)
             self.frames.append(data)
         print("recording done")
+
         # Stop and close the stream
         stream.stop_stream()
         stream.close()
@@ -82,6 +87,8 @@ class Recorder:
 
         for channel in self.channel_names:
             self.mqtt.send_file(channel, self.filename)
+
+        self.driver.send('done', 'stm')
 
     #def stop_stm(self):
     #    self.driver.stop()
