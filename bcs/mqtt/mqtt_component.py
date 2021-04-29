@@ -77,7 +77,7 @@ class MQTT_Client:
             file_object.close()
             # message = Message(topic, self.message_count,
             #                  self.message_storage + topic + str(self.message_count) + file_extension)
-            message = Message(topic, self.message_count, file_path, userName)
+            message = Message(topic, self.message_count, file_path)
             self.stm.add_message(message)
 
     def unsubscribe(self, channel_name):
