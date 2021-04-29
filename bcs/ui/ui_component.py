@@ -25,7 +25,7 @@ class UI_Component:
         self.subwindow_standby_create()
         self.subwindow_mainmenu_create()
         # self.subwindow_toggleChannel_create()
-        self.subwindow_record_create()
+        #self.subwindow_record_create()
         self.subwindow_stopRecording_create()
         # self.CreatePlaybackMessageWindow()
         # self.CreateNewMessagesPerMessageWindow()
@@ -124,7 +124,7 @@ class UI_Component:
         self.stm_component.stm.send("finished")
 
     def subwindow_stopRecording_create(self):
-        self.app.startSubWindow("Stop recording and send")
+        self.app.startSubWindow("Recording message")
 
         self.app.addNamedButton("Stop recording and send",
                                 "StopRecordingAndSend", lambda: self.button_stopRecording_stopRecord())
