@@ -88,7 +88,7 @@ class MQTT_Client:
 
     def send_message(self, channel_name, payload):
         try:
-            self.client.publish(self.prefix + channel_name, payload)
+            self.client.publish(self.prefix + channel_name, payload, qos=0)
         except Exception as e:
             print(e)
 

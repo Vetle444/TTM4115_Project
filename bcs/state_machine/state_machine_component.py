@@ -223,7 +223,7 @@ class StateMachine_Component:
                           'entry': 'ui_show_replay_message;replay_message()'}
 
         play_message = {'name': 'play message',
-                        'entry': 'ui_show_play_message;play_message_from_queue'}
+                        'entry': 'play_message_from_queue'}
 
         play_action = {'name': 'play action',
                        'entry': 'ui_show_play_action'}
