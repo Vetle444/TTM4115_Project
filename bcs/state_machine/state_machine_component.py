@@ -324,7 +324,7 @@ class StateMachine_Component:
         self.ui.update('Standby')
 
     def ui_show_waitingForCommand(self):
-        self.ui.update('Main menu')
+        self.ui.update("Waiting for command")
 
     def ui_show_toggleGeneralChannel(self):
         self.ui.update('Select receiving channels')
