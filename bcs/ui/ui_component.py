@@ -8,11 +8,11 @@ class UI_Component:
         UI driver for the application BCS.
         '''
         self.current_subwindow = None
+        self.stm_component = None
         print("Created UI_component")
 
     def start(self):
-        #self.stm_component = None
-        
+
         self.channels = []  # All mqtt channels (type string)
         # Channels chosen for subscribing (type string)
         self.receivingChannels = []
@@ -60,8 +60,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.startLabelFrame("Select a command", 0, 1)
-        self.app.addButton('Toggle receiving channels', lambda: self.SwitchWindow(
-            "Main menu", "Select receiving channels")) # TODO remove window switch
+        self.app.addButton('Toggle receiving channels', lambda: self.stm_component.stm.send("toggle_channel"))
         self.app.addButton('Replay old messages',
                            self.button_replay_mainmenu)
         self.app.addButton('Record message', self.button_send_mainmenu)
@@ -78,7 +77,7 @@ class UI_Component:
         for i in range(50):  # TODO: Remove before prod
             self.channels.append("Test" + str(i))
 
-        # TODO: Call peer class to get channels, and set self.channels
+        # TODO: Call peer class to get channels, anwd set self.channels
         self.app.startSubWindow("Select receiving channels")
         self.app.startScrollPane("ChannelPane")
 
@@ -95,7 +94,7 @@ class UI_Component:
         self.app.addButton(
             "Submit", self.button_submit_toggleChannel, len(self.channels), 0)
         self.app.addButton(
-            "Cancel", self.button_cancel_toggleChannel, len(self.channels), 1)
+            "Cancel", self.cancel(), len(self.channels), 1)
         self.app.stopFrame()
 
         self.app.stopSubWindow()
@@ -118,7 +117,7 @@ class UI_Component:
         self.app.startFrame("RecipientButtons", 1, 1)
         self.app.addNamedButton("Submit", "RecipientSubmit", self.button_submit_chooseRecipient, len(
             self.receivingChannels), 0)
-        self.app.addNamedButton("Cancel", "RecipientCancel", self.button_cancel_chooseRecipient, len(
+        self.app.addNamedButton("Cancel", "RecipientCancel", self.cancel(), len(
             self.receivingChannels), 1)
 
     def subwindow_record_create(self):
@@ -159,7 +158,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel",
-                                self.OnCancelMessagesPerChannelSubWindow, len(self.channelsWithMessages.keys()), 1)
+                                self.cancel(), len(self.channelsWithMessages.keys()), 1)
         self.app.stopSubWindow()
         self.app.showSubWindow("New messages per channel")
 
@@ -253,7 +252,7 @@ class UI_Component:
 
     def button_stopRecording_stopRecord(self):
         # TODO: Stop recording, then send with mqtt
-        self.subwindow_chooseRecipient_create()
+        self.subwindow_chooseRecipient_create() # TODO put this into function to call from stm
         self.SwitchWindow("Stop recording and send", "Main menu")
         self.app.destroySubWindow("Choose recipient")
 
@@ -263,11 +262,12 @@ class UI_Component:
 
     def button_chooseMode_mainmenu(self):
         # TODO: Change mode in peer class (or skip)
+        # two booleans
         print(self.app.getRadioButton("mode"))
 
-    def OnCancelMessagesPerChannelSubWindow(self):
-        self.app.destroySubWindow("New messages per channel")
-        self.app.showSubWindow("Main menu")
+    #def OnCancelMessagesPerChannelSubWindow(self):
+    #    self.app.destroySubWindow("New messages per channel")
+    #    self.app.showSubWindow("Main menu")
 
     def button_cancel_newMsgMessages(self):
         self.app.destroySubWindow(
@@ -275,10 +275,11 @@ class UI_Component:
         self.subwindow_newMsgChannels_create()
 
     def button_send_mainmenu(self):
-        if(len(self.receivingChannels) == 0):
-            self.OnError("Not selected any channels",
-                         "You have not selected any channels to subscribe to, please select receiving channels")
-            return
+        self.stm_component.stm.send("send")
+        #if(len(self.receivingChannels) == 0):
+        #    self.OnError("Not selected any channels",
+        #                 "You have not selected any channels to subscribe to, please select receiving channels")
+        #    return
 
         self.subwindow_chooseRecipient_create()
         self.SwitchWindow("Main menu", "Choose recipient")
@@ -288,7 +289,7 @@ class UI_Component:
         self.app.setSize(400, 200)
 
     def button_cancel_record(self):
-        self.subwindow_chooseRecipient_create()
+        self.subwindow_chooseRecipient_create() # TODO: make this into function
         self.SwitchWindow("Record Message", "Choose recipient")
 
     # On record voice message
@@ -298,6 +299,7 @@ class UI_Component:
 
     # Subscribing channels
     def button_submit_toggleChannel(self):
+        # TODO
         for i in range(len(self.channels)):
             if(self.app.getCheckBox(self.channels[i]) and self.channels[i] not in self.receivingChannels):
                 self.receivingChannels.append(self.channels[i])
@@ -321,6 +323,7 @@ class UI_Component:
 
     # Sending channels
     def button_submit_chooseRecipient(self):
+        # TODO
         for i in range(len(self.receivingChannels)):
             if(self.app.getCheckBox(self.receivingChannels[i] + "_recipient")):
                 self.recipientChannels.append(self.receivingChannels[i])
@@ -329,9 +332,9 @@ class UI_Component:
         self.app.destroySubWindow("Choose recipient")
         self.app.showSubWindow("Record Message")
 
-    def button_cancel_chooseRecipient(self):
-        self.app.destroySubWindow("Choose recipient")
-        self.app.showSubWindow("Main menu")
+    #def button_cancel_chooseRecipient(self):
+    #    self.app.destroySubWindow("Choose recipient")
+    #    self.app.showSubWindow("Main menu")
 
     def OnNotifyStmToggleReceivingChannel(self):
         self.stm_component.stm.send("toggle_channel")
@@ -367,10 +370,7 @@ channels = []
 for i in range(50):
     channels.append("Test" + str(i))
 '''
-#test = UI_Component()
 '''
-d= test.generate_channel_with_messages()
-for k, v in d.items():
-    for m in v:
-        print(m)
+test = UI_Component()
+test.start()
 '''
