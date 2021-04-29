@@ -8,11 +8,11 @@ class UI_Component:
         UI driver for the application BCS.
         '''
         self.current_subwindow = None
+        self.stm_component = None
         print("Created UI_component")
 
     def start(self):
-        #self.stm_component = None
-        
+
         self.channels = []  # All mqtt channels (type string)
         # Channels chosen for subscribing (type string)
         self.receivingChannels = []
@@ -60,8 +60,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         self.app.startLabelFrame("Select a command", 0, 1)
-        self.app.addButton('Toggle receiving channels', lambda: self.SwitchWindow(
-            "Main menu", "Select receiving channels")) # TODO remove window switch
+        self.app.addButton('Toggle receiving channels', lambda: self.stm_component.stm.send("toggle_channel"))
         self.app.addButton('Replay old messages',
                            self.button_replay_mainmenu)
         self.app.addButton('Record message', self.button_send_mainmenu)
@@ -289,9 +288,9 @@ class UI_Component:
         self.app.errorBox(errr_title, error_msg)
         self.app.setSize(400, 200)
 
-    #def button_cancel_record(self):
-    #    self.subwindow_chooseRecipient_create() TODO: make this into function
-    #    self.SwitchWindow("Record Message", "Choose recipient")
+    def button_cancel_record(self):
+        self.subwindow_chooseRecipient_create() # TODO: make this into function
+        self.SwitchWindow("Record Message", "Choose recipient")
 
     # On record voice message
     def button_record_record(self):
