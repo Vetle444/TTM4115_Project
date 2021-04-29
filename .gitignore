@@ -1,5 +1,6 @@
 #Custom folders to exclude inproject
 /bcs/messages/*
+/messages/*
 /bcs/audio/file.wav
 #/bcs/audio/recorded_message.wav
 
