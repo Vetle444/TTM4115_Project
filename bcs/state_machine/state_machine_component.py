@@ -329,14 +329,16 @@ class StateMachine_Component:
         self.ui.update("Waiting for command")
         print("TEST")
 
-    def ui_show_toggleGeneralChannel(self):
+    def ui_show_toggleGeneralChannels(self):
         self.ui.update('Select receiving channels')
+        print("In select receiving channels")
 
     def ui_show_playMessage(self):
         self.ui.update(f'Message from channel {self.recipient}')
 
     def ui_show_playAction(self):
-        self.ui.update('window')
+        pass
+        #self.ui.update('window') # TODO does this have a window? tod   o
 
     def ui_show_chooseRecipientSend(self):
         self.ui.update('Choose recipient')
@@ -348,13 +350,17 @@ class StateMachine_Component:
         self.ui.update('New messages per channel')
 
     def ui_show_ReplayMessage(self):
-        self.ui.update('window')
+        pass # TODO
+        #self.ui.update('window')
 
     def ui_show_ReplayAction(self):
-        self.ui.update('window')
+        pass # TODO
+        #self.ui.update('window')
 
     def ui_show_ChooseState(self):
-        self.ui.update('window')
+        # TODO
+        pass
+        #self.ui.update('window')
 
     def setUI(self, ui):
         self.ui = ui

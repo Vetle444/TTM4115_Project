@@ -199,7 +199,7 @@ class UI_Component:
         Plays back a selected message
         '''
         self.app.startSubWindow(
-            "Message from channel {}".format(self.selectedChannel))
+            "View Message")# from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.startFrame("PlaybackButtons", 1, 1)
         # TODO update here too
@@ -240,9 +240,10 @@ class UI_Component:
         # Should close fromCreateNewMessagesPerChannelWindow
         # TODO: Fetch messages from peer class
         self.messagesInChannel = channel
-        self.subwindow_newMsgMessages_create(channel)
-        self.app.destroySubWindow("New messages per channel")
-
+        self.stm_component.recipient = channel
+        #self.subwindow_newMsgMessages_create(channel)
+        #self.app.destroySubWindow("New messages per channel")
+        self.stm_component.stm.send('finished')
         return None
 
     def onViewMessage(self, message):
@@ -284,8 +285,8 @@ class UI_Component:
         #                 "You have not selected any channels to subscribe to, please select receiving channels")
         #    return
 
-        self.subwindow_chooseRecipient_create()
-        self.SwitchWindow("Waiting for command", "Choose recipient")
+        #self.subwindow_chooseRecipient_create()
+        #self.SwitchWindow("Waiting for command", "Choose recipient")
 
     def OnError(self, errr_title, error_msg):
         self.app.errorBox(errr_title, error_msg)
@@ -359,21 +360,21 @@ class UI_Component:
         return d
     '''
 
-    def update(self, sub_window):
+    def update(self, sub_window, message=None, channel=None):
         print(f"UI tries to switch to subwindow {sub_window}")
         if sub_window != self.current_subwindow:
             print(f"updating window from {self.current_subwindow} to {sub_window}!")
-            if sub_window in ['']:
-                pass
-                #self.subwindow_chooseRecipient_create()
-                #subwindow_chooseRecipient_create
-                #self.subwindow_newMsgChannels_create()
-                #self.subwindow_message_create(message)
-                #self.subwindow_newMsgMessages_create(channel)
-                #self.subwindow_newMsgChannels_create()
+            if sub_window == 'Choose recipient':
+                self.subwindow_chooseRecipient_create()
+            elif sub_window == 'New messages per channel':
+                self.subwindow_newMsgChannels_create()
+            elif sub_window == 'View Message':
+                self.subwindow_message_create(message)
+            elif sub_window == 'Select receiving channels':
+                self.subwindow_toggleChannel_create()
             else:
                 self.app.showSubWindow(sub_window)
-            if not self.current_subwindow: # in ['Choose recipient', 'Messages from channel ' + self.selectedChannel, 'New messages per channel']:
+            if self.current_subwindow in ['Choose recipient', 'New messages per channel', 'View Message', 'Select receiving channels']:
                 self.app.destroySubWindow(self.current_subwindow)
             else:
                 self.app.hideSubWindow(self.current_subwindow)
