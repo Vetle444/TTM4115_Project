@@ -369,6 +369,7 @@ class UI_Component:
                 #subwindow_chooseRecipient_create
                 #self.subwindow_newMsgChannels_create()
                 #self.subwindow_message_create(message)
+                #self.subwindow_newMsgMessages_create(channel)
                 #self.subwindow_newMsgChannels_create()
             else:
                 self.app.showSubWindow(sub_window)

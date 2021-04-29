@@ -321,10 +321,13 @@ class StateMachine_Component:
         # DOESNT WORK because stm.state is only updated after entry actions.. :(
 
     def ui_show_standby(self):
-        self.ui.update('Standby')
+        self.ui.start()
+        #self.ui.update('Standby')
+        print("TEST standby")
 
     def ui_show_waitingForCommand(self):
         self.ui.update("Waiting for command")
+        print("TEST")
 
     def ui_show_toggleGeneralChannel(self):
         self.ui.update('Select receiving channels')
