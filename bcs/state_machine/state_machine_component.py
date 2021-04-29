@@ -17,8 +17,8 @@ class StateMachine_Component:
         self.chosen_message = None
         self.chosen_channel=None
         self.recipientList = []
-        self.loudnessMode = False
-        self.doNotDisturbMode = False
+        # Default operation_mode is "Listen-mode". Other options are "Loudness-mode" and "Do not disturb-mode"
+        self.operation_mode = "Listen-mode"
         self.subscribed = []
         self.driver = None
         self.state_to_window = {
@@ -239,7 +239,7 @@ class StateMachine_Component:
                            standby, waiting_for_command, toggle_general_channel, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action, choose_message_listen])
 
     def compound_transition_msg_queue(self):
-        if 0 < len(self.new_msg_queue) <= 5 and not (self.doNotDisturbMode or self.loudnessMode):
+        if 0 < len(self.new_msg_queue) <= 5 and self.operation_mode == "Listen-mode":
             return 'play message'
         elif len(self.new_msg_queue) > 5:
             # Delete queue
