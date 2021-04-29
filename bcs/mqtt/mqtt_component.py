@@ -49,7 +49,7 @@ class MQTT_Client:
 
     def create_channel_list(self):
         # sending hard coded channel list to simulate server component
-        payload = "Test,Erlend,Group 1,Group 2"
+        payload = "Group 1,Group 2,Group 3,Group 4,Group 5"
         try:
             self.client.publish(self.prefix + "channel_list", payload)  # TODO make deferred
         except Exception as e:
@@ -69,8 +69,7 @@ class MQTT_Client:
         else:
             self.message_count += 1
 
-            # Adding ".wav" for all messages# not from "channel_list"
-            file_extension = ".wav"  # if topic != "channel_list" else ""
+            file_extension = ".wav"
             file_object = open(self.message_storage + topic + "-" +
                                str(self.message_count) + file_extension, "wb")
             file_object.write(msg.payload)
