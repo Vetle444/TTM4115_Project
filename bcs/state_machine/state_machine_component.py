@@ -112,6 +112,11 @@ class StateMachine_Component:
                'target': 'choose message listen'
                }
 
+        t7 = {'trigger': 'cancel',
+                'source': 'choose message listen',
+                'target': 'choose recipient listen'
+                }
+
         t15 = {'trigger': 'finished',
                'source': 'choose message listen',
                'target': 'replay message'
