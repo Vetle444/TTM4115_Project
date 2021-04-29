@@ -143,7 +143,7 @@ class StateMachine_Component:
 
         t22 = {'trigger': 'done',
                'source': 'toggle general channel',
-               'effect': 'toggle_channel_subscribe(*)',
+               'effect': 'toggle_channel_subscribe',
                'target': 'waiting for command'
                }
 
@@ -187,31 +187,31 @@ class StateMachine_Component:
                                'entry': 'start_timer("timeout", 60000); ui_show_waitingForCommand'}
 
         toggle_general_channel = {'name': 'toggle general channel',
-                                  'entry': 'toggle_received_channels()'}
+                                  'entry': 'ui_show_toggleGeneralChannels'}
 
         choose_state = {'name': 'choose state',
-                        'entry': 'self.ui.choose_state'}
+                        'entry': 'ui_show_chooseState'}
 
         choose_recipient_listen = {'name': 'choose recipient listen',
-                                   'entry': 'choose_channel_replay'}
+                                   'entry': 'ui_show_recipient_listen'}
 
         choose_recipient_send = {'name': 'choose recipient send',
-                                 'entry': 'choose_channel_send'}
+                                 'entry': 'ui_show_recipient_send'}
 
         record_message = {'name': 'recording message',
-                          'entry': "self.recorder.start_recording()"}
+                          'entry': "ui_show_recording_message;self.recorder.start_recording()"}
 
         replay_message = {'name': 'replay message',
-                          'entry': 'self.replay_message_from_dict()'}
+                          'entry': 'ui_show_replay_message;self.replay_message_from_dict()'}
 
         play_message = {'name': 'play message',
-                        'entry': 'self.play_message_from_queue()'}
+                        'entry': 'ui_show_play_message;self.play_message_from_queue()'}
 
         play_action = {'name': 'play action',
-                       'entry': 'self.ui.showControls'}
+                       'entry': 'ui_show_play_action;'}
 
         replay_action = {'name': 'replay action',
-                         'entry': 'self.ui.showControls'}
+                         'entry': 'ui_show_replay_action;'}
 
         # Change 4: We pass the set of states to the state machine
         self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29], obj=self, states=[
@@ -243,7 +243,7 @@ class StateMachine_Component:
     def recorded_message_too_long(self):
         print("Message too long, try again")  # read
 
-    def toggle_channel_subscribe(self, channel_list):
+    def toggle_channel_subscribe(self):
         # get channels from the UI
         """
         if channel_name == "invalid":
