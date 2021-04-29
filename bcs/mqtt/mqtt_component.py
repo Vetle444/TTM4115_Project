@@ -73,11 +73,15 @@ class MQTT_Client:
             file_path = self.message_storage + topic + "-" + str(self.message_count) + file_extension
             file_object = open(file_path, "wb")
             print("saving to" + str(file_object))
-            file_object.write(msg.payload)
+            userName=msg.payload.split('-')[1]
+            if topic==self.user_name:
+                topic=userName
+            senderData=msg.payload.split('-')[0]
+            file_object.write(senderData)
             file_object.close()
             # message = Message(topic, self.message_count,
             #                  self.message_storage + topic + str(self.message_count) + file_extension)
-            message = Message(topic, self.message_count, file_path)
+            message = Message(topic, self.message_count, file_path, userName)
             self.stm.add_message(message)
 
     def unsubscribe(self, channel_name):
@@ -88,7 +92,7 @@ class MQTT_Client:
 
     def send_message(self, channel_name, payload):
         try:
-            self.client.publish(self.prefix + channel_name, payload, qos=0)
+            self.client.publish(self.prefix + channel_name, payload+'-'+self.user_name, qos=0)
         except Exception as e:
             print(e)
 

@@ -13,11 +13,12 @@ class Message:
 
     """
 
-    def __init__(self, channel_name, ID, audio_file_path):
+    def __init__(self, channel_name, ID, audio_file_path, user_name):
         self.audio_file_path = audio_file_path
         self.channel_name = channel_name
         self.new = True
         self.ID = ID
+        self.user_name=user_name
 
     # destructor that deletes message file when message object is deleted
     def __del__(self):
