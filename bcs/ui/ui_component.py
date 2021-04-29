@@ -354,30 +354,33 @@ class UI_Component:
     def update(self, sub_window, message=None, channel=None):
         print(f"UI tries to switch to subwindow {sub_window}")
 
-        if sub_window != self.current_subwindow:
-            print(f"updating window from {self.current_subwindow} to {sub_window}!")
-            if sub_window == 'Choose recipient':
-                self.subwindow_chooseRecipient_create()
-            elif sub_window == 'New messages per channel':
-                self.subwindow_newMsgChannels_create()
-            elif sub_window == 'Replay controls':
-                self.subwindow_replayControls_create()
-            elif sub_window == 'Select receiving channels':
-                self.subwindow_toggleChannel_create()
-            elif sub_window == 'Messages from channel':
-                self.subwindow_newMsgMessages_create()
-            elif sub_window == "Playing message":
-                self.subwindow_playMessage_create()
-            #elif sub_window == 'Stop recording and send':
+        try:
+            if sub_window != self.current_subwindow:
+                print(f"updating window from {self.current_subwindow} to {sub_window}!")
+                if sub_window == 'Choose recipient':
+                    self.subwindow_chooseRecipient_create()
+                elif sub_window == 'New messages per channel':
+                    self.subwindow_newMsgChannels_create()
+                elif sub_window == 'Replay controls':
+                    self.subwindow_replayControls_create()
+                elif sub_window == 'Select receiving channels':
+                    self.subwindow_toggleChannel_create()
+                elif sub_window == 'Messages from channel':
+                    self.subwindow_newMsgMessages_create()
+                elif sub_window == "Playing message":
+                    self.subwindow_playMessage_create()
+                #elif sub_window == 'Stop recording and send':
 
-            else:
-                self.app.showSubWindow(sub_window)
-            if self.current_subwindow in ['Choose recipient', 'New messages per channel', 'View Message',
-                                          'Select receiving channels', 'Messages from channel', 'Playing message', 'Replay controls']:
-                self.app.destroySubWindow(self.current_subwindow)
-            else:
-                self.app.hideSubWindow(self.current_subwindow)
-            self.current_subwindow = sub_window
+                else:
+                    self.app.showSubWindow(sub_window)
+                if self.current_subwindow in ['Choose recipient', 'New messages per channel', 'View Message',
+                                              'Select receiving channels', 'Messages from channel', 'Playing message', 'Replay controls']:
+                    self.app.destroySubWindow(self.current_subwindow)
+                else:
+                    self.app.hideSubWindow(self.current_subwindow)
+                self.current_subwindow = sub_window
+        except AttributeError as err:
+            print("app not defined yet")
 
     def cancel(self):
         self.stm_component.stm.send("cancel")
