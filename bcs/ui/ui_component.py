@@ -25,7 +25,7 @@ class UI_Component:
         self.subwindow_standby_create()
         self.subwindow_mainmenu_create()
         # self.subwindow_toggleChannel_create()
-        #self.subwindow_record_create()
+        # self.subwindow_record_create()
         self.subwindow_stopRecording_create()
         # self.CreatePlaybackMessageWindow()
         # self.CreateNewMessagesPerMessageWindow()
@@ -68,7 +68,9 @@ class UI_Component:
         '''
 
         channel_list = self.stm_component.mqtt.channel_list
+        channel_list = [channel for channel in channel_list if "group" in channel.lower()]
 
+        print("USERNAME" + self.stm_component.mqtt.user_name.lower())
         self.app.startSubWindow("Select receiving channels")
         self.app.startScrollPane("ChannelPane")
 
@@ -112,8 +114,9 @@ class UI_Component:
 
         self.app.startFrame("RecipientButtons", 1, 1)
 
-        self.app.addNamedButton("Record", "RecipientRecord", lambda: self.button_submit_chooseRecipient(channel_list), len(
-            channel_list), 1)
+        self.app.addNamedButton("Record", "RecipientRecord", lambda: self.button_submit_chooseRecipient(channel_list),
+                                len(
+                                    channel_list), 1)
         self.app.addNamedButton("Cancel", "RecipientCancel", lambda: self.cancel(), len(
             channel_list), 0)
 
@@ -150,7 +153,8 @@ class UI_Component:
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
 
-        self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel", lambda: self.cancel(), len(self.stm_component.messages.keys()), 1)
+        self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel", lambda: self.cancel(),
+                                len(self.stm_component.messages.keys()), 1)
         self.app.stopSubWindow()
         self.app.showSubWindow("New messages per channel")
 
@@ -188,16 +192,16 @@ class UI_Component:
         '''
         Plays back a selected message
         '''
-        self.app.startSubWindow("Playing message")# from channel {}".format(self.selectedChannel))
+        self.app.startSubWindow("Playing message")  # from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.addLabel('l1', f'Playing message from {self.stm_component.chosen_channel}')
-        #self.app.startFrame("PlaybackButtons", 1, 1)
+        # self.app.startFrame("PlaybackButtons", 1, 1)
         # TODO update here too
-        #self.app.addButton(
+        # self.app.addButton(
         #    "Play message", lambda: self.OnPlayMessage(message), 0, 0)
-        #self.app.addNamedButton(
+        # self.app.addNamedButton(
         #    "Cancel", "CancelPlayMessage", self.button_cancel_message, 0, 1)
-        #self.app.stopFrame()
+        # self.app.stopFrame()
         self.app.stopSubWindow()
         self.app.showSubWindow("Playing message")
 
@@ -205,7 +209,7 @@ class UI_Component:
         '''
         Plays back a selected message
         '''
-        self.app.startSubWindow("Replay controls")# from channel {}".format(self.selectedChannel))
+        self.app.startSubWindow("Replay controls")  # from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.startFrame("ReplayButtons", 1, 1)
 
@@ -281,15 +285,16 @@ class UI_Component:
         self.app.errorBox(errr_title, error_msg)
         self.app.setSize(400, 200)
 
-    #def button_cancel_record(self):
-        #self.subwindow_chooseRecipient_create()  # TODO: make this into function
-        #self.SwitchWindow("Record Message", "Choose recipient")
+    # def button_cancel_record(self):
+    # self.subwindow_chooseRecipient_create()  # TODO: make this into function
+    # self.SwitchWindow("Record Message", "Choose recipient")
 
     # On record voice message
     """
     def button_record_record(self):
         self.stm_component.stm.send("record")
     """
+
     # Subscribing channels
     def button_submit_toggleChannel(self, channel_list):
         for channel in channel_list:
@@ -318,13 +323,15 @@ class UI_Component:
     def button_submit_chooseRecipient(self, channel_list):
         # TODO
         for i in range(len(channel_list)):
-            if (self.app.getCheckBox(channel_list[i] + "_recipient") and channel_list[i] not in self.stm_component.recipientList):
+            if (self.app.getCheckBox(channel_list[i] + "_recipient") and channel_list[
+                i] not in self.stm_component.recipientList):
                 self.stm_component.recipientList.append(channel_list[i])
-            elif not self.app.getCheckBox(channel_list[i]) + "_recipient" and channel_list[i] in self.stm_component.recipientList:
+            elif not self.app.getCheckBox(channel_list[i]) + "_recipient" and channel_list[
+                i] in self.stm_component.recipientList:
                 self.stm_component.recipientList.remove(channel_list[i])
 
-        #self.app.destroySubWindow("Choose recipient")
-        #self.app.showSubWindow("Record Message")
+        # self.app.destroySubWindow("Choose recipient")
+        # self.app.showSubWindow("Record Message")
 
         self.stm_component.stm.send("finished")
 
@@ -369,12 +376,13 @@ class UI_Component:
                     self.subwindow_newMsgMessages_create()
                 elif sub_window == "Playing message":
                     self.subwindow_playMessage_create()
-                #elif sub_window == 'Stop recording and send':
+                # elif sub_window == 'Stop recording and send':
 
                 else:
                     self.app.showSubWindow(sub_window)
                 if self.current_subwindow in ['Choose recipient', 'New messages per channel', 'View Message',
-                                              'Select receiving channels', 'Messages from channel', 'Playing message', 'Replay controls']:
+                                              'Select receiving channels', 'Messages from channel', 'Playing message',
+                                              'Replay controls']:
                     self.app.destroySubWindow(self.current_subwindow)
                 else:
                     self.app.hideSubWindow(self.current_subwindow)
