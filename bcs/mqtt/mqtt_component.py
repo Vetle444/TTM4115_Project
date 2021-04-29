@@ -49,7 +49,7 @@ class MQTT_Client:
 
     def create_channel_list(self):
         # sending hard coded channel list to simulate server component
-        payload = "Group 1,Group 2,Group 3,Group 4,Group 5"
+        payload = "Group 1,Group 2,Group 3,Group 4,Group 5,Vetle,Santhosh,Erlend,Martin,Sindre,Mina"
         try:
             self.client.publish(self.prefix + "channel_list", payload)  # TODO make deferred
         except Exception as e:
