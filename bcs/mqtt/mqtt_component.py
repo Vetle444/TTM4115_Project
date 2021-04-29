@@ -39,7 +39,7 @@ class MQTT_Client:
         self.message_count = 0
         self.stm = None
         self.channel_list = []
-        self.message_storage = "./messages/"
+        self.message_storage = "../messages/"
         if not os.path.exists(os.path.dirname(self.message_storage)):
             try:
                 os.makedirs(os.path.dirname(self.message_storage))
