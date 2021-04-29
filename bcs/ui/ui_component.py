@@ -318,10 +318,10 @@ class UI_Component:
     def button_submit_chooseRecipient(self, channel_list):
         # TODO
         for i in range(len(channel_list)):
-            if (self.app.getCheckBox(channel_list[i] + "_recipient")):
+            if (self.app.getCheckBox(channel_list[i] + "_recipient") and channel_list[i] not in self.stm_component.recipientList):
                 self.stm_component.recipientList.append(channel_list[i])
-
-        print(self.stm_component.recipientList)
+            elif not self.app.getCheckBox(channel_list[i]) + "_recipient" and channel_list[i] in self.stm_component.recipientList:
+                self.stm_component.recipientList.remove(channel_list[i])
 
         #self.app.destroySubWindow("Choose recipient")
         #self.app.showSubWindow("Record Message")

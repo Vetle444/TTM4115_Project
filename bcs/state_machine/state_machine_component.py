@@ -240,6 +240,7 @@ class StateMachine_Component:
 
     def compound_transition_msg_queue(self):
         if 0 < len(self.new_msg_queue) <= 5 and self.operation_mode == "Listen-mode":
+            print(len(self.new_msg_queue))
             return 'play message'
         elif len(self.new_msg_queue) > 5:
             # Delete queue
