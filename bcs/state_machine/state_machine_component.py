@@ -77,7 +77,7 @@ class StateMachine_Component:
         '''
 
         t8 = {'trigger': 'answer',
-              'source': 'play action',
+              'source': 'replay action',
               'target': 'recording message'
               }
         """
