@@ -130,7 +130,7 @@ class UI_Component:
         self.app.startSubWindow("Recording message")
 
         self.app.addNamedButton("Stop recording and send",
-                                "StopRecordingAndSend", lambda: self.button_stopRecording_stopRecord())
+                                "StopRecordingAndSend", lambda: self.stm_component.stm.send('stop_message'))
 
         self.app.stopSubWindow()
 
@@ -179,7 +179,7 @@ class UI_Component:
         self.app.stopLabelFrame()
 
         '''
-        self.app.addNamedButton("Cancel", "Cancel_Messages", self.button_cancel_newMsgMessages, len(
+        self.app.addNamedButton("Cancel", "Cancel_Messages", Lambda: self.cancel(), len(
             self.messagesInChannel), 1)
         '''
 
@@ -195,13 +195,6 @@ class UI_Component:
         self.app.startSubWindow("Playing message")  # from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.addLabel('l1', f'Playing message from {self.stm_component.chosen_channel}')
-        # self.app.startFrame("PlaybackButtons", 1, 1)
-        # TODO update here too
-        # self.app.addButton(
-        #    "Play message", lambda: self.OnPlayMessage(message), 0, 0)
-        # self.app.addNamedButton(
-        #    "Cancel", "CancelPlayMessage", self.button_cancel_message, 0, 1)
-        # self.app.stopFrame()
         self.app.stopSubWindow()
         self.app.showSubWindow("Playing message")
 
@@ -223,26 +216,6 @@ class UI_Component:
         self.app.stopSubWindow()
         self.app.showSubWindow("Replay controls")
 
-    def OnPlayMessage(self, message):
-        # Should play the message
-        # TODO: Play back message, call peer class
-        print("Playing the message")
-        print(message)
-        return None
-
-    def button_cancel_message(self):
-        # self.app.destroySubWindow(
-        #    "Message from channel " + self.selectedChannel)
-        self.app.showSubWindow("Waiting for command")
-
-    def button_replay_mainmenu(self):
-        # Called from Waiting for command, displays channels with new messages (calls CreateNewMessagesPerChannelWindow)
-        print("onViewChannelsWithNewMessages called")
-        # TODO: Fetch channels from peer class
-        # self.channelsWithMessages = self.stm_component.messages.keys()
-        self.app.hideSubWindow("Waiting for command")
-        self.subwindow_newMsgChannels_create()
-
     def onViewMessagesWithNewMessages(self, channel=None):
         self.stm_component.chosen_channel = channel
         self.stm_component.stm.send('finished')
@@ -253,47 +226,14 @@ class UI_Component:
         self.stm_component.chosen_message = message
         self.stm_component.stm.send('finished')
 
-    def button_stopRecording_stopRecord(self):
-        self.stm_component.stm.send('stop_message')
-
     def button_chooseMode_mainmenu(self):
         selected_radio_button = self.app.getRadioButton("mode")
         self.stm_component.operation_mode = selected_radio_button
         print("UI set to mode: {}".format(selected_radio_button))
 
-    # def OnCancelMessagesPerChannelSubWindow(self):
-    #    self.app.destroySubWindow("New messages per channel")
-    #    self.app.showSubWindow("Waiting for command")
-
-    def button_cancel_newMsgMessages(self):
-        self.cancel()
-        # self.app.destroySubWindow(
-        #    "Messages from channel")
-        # self.subwindow_newMsgChannels_create()
-
-    def button_send_mainmenu(self):
-        self.stm_component.stm.send("send")
-        # if(len(self.receivingChannels) == 0):
-        #    self.OnError("Not selected any channels",
-        #                 "You have not selected any channels to subscribe to, please select receiving channels")
-        #    return
-
-        # self.subwindow_chooseRecipient_create()
-        # self.SwitchWindow("Waiting for command", "Choose recipient")
-
     def OnError(self, errr_title, error_msg):
         self.app.errorBox(errr_title, error_msg)
         self.app.setSize(400, 200)
-
-    # def button_cancel_record(self):
-    # self.subwindow_chooseRecipient_create()  # TODO: make this into function
-    # self.SwitchWindow("Record Message", "Choose recipient")
-
-    # On record voice message
-    """
-    def button_record_record(self):
-        self.stm_component.stm.send("record")
-    """
 
     # Subscribing channels
     def button_submit_toggleChannel(self, channel_list):
@@ -305,46 +245,17 @@ class UI_Component:
                 self.stm_component.subscribed.remove(channel)
 
         print(self.stm_component.subscribed)
-
         self.stm_component.stm.send("finished")
-        # return None
-
-        # def button_cancel_toggleChannel(self):
-        # If you untick checkboxes that are in active receiving channels and then cancel, set the checkboxes that are in active receiving channels to true aga
-        '''
-
-        for i in range(len(self.channels)):
-            if(self.app.getCheckBox(self.channels[i]) == False and self.channels[i] in self.receivingChannels):
-                self.app.setCheckBox(self.channels[i], True, True)
-        '''
-        # self.SwitchWindow("Select receiving channels", "Waiting for command")
 
     # Sending channels
     def button_submit_chooseRecipient(self, channel_list):
-        # TODO
-        for i in range(len(channel_list)):
-            if (self.app.getCheckBox(channel_list[i] + "_recipient") and channel_list[
-                i] not in self.stm_component.recipientList):
-                self.stm_component.recipientList.append(channel_list[i])
-            elif not self.app.getCheckBox(channel_list[i]) + "_recipient" and channel_list[
-                i] in self.stm_component.recipientList:
-                self.stm_component.recipientList.remove(channel_list[i])
-
-        # self.app.destroySubWindow("Choose recipient")
-        # self.app.showSubWindow("Record Message")
+        for channel in channel_list:
+            if (self.app.getCheckBox(channel + "_recipient") and channel not in self.stm_component.recipientList):
+                self.stm_component.recipientList.append(channel)
+            elif not self.app.getCheckBox(channel + "_recipient") and channel in self.stm_component.recipientList:
+                self.stm_component.recipientList.remove(channel)
 
         self.stm_component.stm.send("finished")
-
-    # def button_cancel_chooseRecipient(self):
-    #    self.app.destroySubWindow("Choose recipient")
-    #    self.app.showSubWindow("Waiting for command")
-
-    def OnNotifyStmToggleReceivingChannel(self):
-        self.stm_component.stm.send("toggle_channel")
-
-    def SwitchWindow(self, fromSubWindow, toSubWindow):
-        self.app.hideSubWindow(fromSubWindow)
-        self.app.showSubWindow(toSubWindow)
 
     '''
     def generate_channel_with_messages(self):
