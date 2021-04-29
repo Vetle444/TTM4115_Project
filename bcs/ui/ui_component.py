@@ -88,7 +88,7 @@ class UI_Component:
         self.app.addButton(
             "Submit", lambda: self.button_submit_toggleChannel(channel_list), len(channel_list), 0)
         self.app.addButton(
-            "Cancel", self.cancel, len(channel_list), 1)
+            "Cancel", lambda: self.cancel(), len(channel_list), 1)
         self.app.stopFrame()
 
         self.app.stopSubWindow()
@@ -119,15 +119,9 @@ class UI_Component:
         '''
         self.app.showSubWindow("Choose recipient")
 
-    def subwindow_record_create(self):
-        self.app.startSubWindow("Record Message")
-        self.app.setSize(400, 200)
-
-        self.app.addButton("Start recording", self.button_record_record)
-        self.app.addNamedButton("Cancel", "Cancel_Record", self.button_cancel_record)
-
-        self.app.stopSubWindow()
-        self.app.hideSubWindow("Record Message")
+    def stop_recording(self):
+        print("UI is asking to stop the recording")
+        self.stm_component.stm.send("finished")
 
     def subwindow_stopRecording_create(self):
         self.app.startSubWindow("Stop recording and send")
@@ -156,8 +150,7 @@ class UI_Component:
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
 
-        self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel",
-                                self.cancel, len(self.stm_component.messages.keys()), 1)
+        self.app.addNamedButton("Cancel", "Cancel_MessagesPerChannel", lambda: self.cancel(), len(self.stm_component.messages.keys()), 1)
         self.app.stopSubWindow()
         self.app.showSubWindow("New messages per channel")
 
@@ -205,8 +198,8 @@ class UI_Component:
         #self.app.addNamedButton(
         #    "Cancel", "CancelPlayMessage", self.button_cancel_message, 0, 1)
         #self.app.stopFrame()
-
         self.app.stopSubWindow()
+        self.app.showSubWindow("Playing message")
 
     def subwindow_replayControls_create(self, message=None):
         '''
@@ -214,15 +207,18 @@ class UI_Component:
         '''
         self.app.startSubWindow("Replay controls")# from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
-        self.app.startFrame("PlaybackButtons", 1, 1)
-        self.app.addLabel('l1', f'Playing message from {self.stm_component.chosen_channel}')
+        self.app.startFrame("ReplayButtons", 1, 1)
+
+        self.app.addNamedButton(
+            "Cancel", "Cancel_replayControls", lambda: self.cancel(), 1, 1)
+
         self.app.addButton(
             "Answer", lambda: print("Not implemented yet!"), 1, 0)
-        self.app.addNamedButton(
-            "Cancel", "Cancel", self.cancel(), 1, 1)
+        self.app.addLabel('l2', f'Playing message from {self.stm_component.chosen_channel}')
         self.app.stopFrame()
 
         self.app.stopSubWindow()
+        self.app.showSubWindow("Replay controls")
 
     def OnPlayMessage(self, message):
         # Should play the message
@@ -254,10 +250,7 @@ class UI_Component:
         self.stm_component.stm.send('finished')
 
     def button_stopRecording_stopRecord(self):
-        # TODO: Stop recording, then send with mqtt
-        self.subwindow_chooseRecipient_create()  # TODO put this into function to call from stm
-        self.SwitchWindow("Stop recording and send", "Waiting for command")
-        self.app.destroySubWindow("Choose recipient")
+        self.stm_component.stm.send('stop_message')
 
     def button_chooseMode_mainmenu(self):
         selected_radio_button = self.app.getRadioButton("mode")
@@ -288,9 +281,9 @@ class UI_Component:
         self.app.errorBox(errr_title, error_msg)
         self.app.setSize(400, 200)
 
-    def button_cancel_record(self):
-        self.subwindow_chooseRecipient_create()  # TODO: make this into function
-        self.SwitchWindow("Record Message", "Choose recipient")
+    #def button_cancel_record(self):
+        #self.subwindow_chooseRecipient_create()  # TODO: make this into function
+        #self.SwitchWindow("Record Message", "Choose recipient")
 
     # On record voice message
     def button_record_record(self):
@@ -330,8 +323,8 @@ class UI_Component:
 
         print(self.stm_component.recipientList)
 
-        self.app.destroySubWindow("Choose recipient")
-        self.app.showSubWindow("Record Message")
+        #self.app.destroySubWindow("Choose recipient")
+        #self.app.showSubWindow("Record Message")
 
         self.stm_component.stm.send("finished")
 
@@ -376,10 +369,12 @@ class UI_Component:
                 self.subwindow_newMsgMessages_create()
             elif sub_window == "Playing message":
                 self.subwindow_playMessage_create()
+            #elif sub_window == 'Stop recording and send':
+
             else:
                 self.app.showSubWindow(sub_window)
             if self.current_subwindow in ['Choose recipient', 'New messages per channel', 'View Message',
-                                          'Select receiving channels', 'Messages from channel']:
+                                          'Select receiving channels', 'Messages from channel', 'Playing message', 'Replay controls']:
                 self.app.destroySubWindow(self.current_subwindow)
             else:
                 self.app.hideSubWindow(self.current_subwindow)

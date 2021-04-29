@@ -29,7 +29,7 @@ class StateMachine_Component:
             'choose state': 'window',
             'choose recipient listen': 'New messages per channel', #"Messages from channel " + self.selectedChannel doesnt correspond to a state
             'choose recipient send': 'Choose recipient',
-            'record message': 'Record Message', # "Stop recording and send" doesnt correspond to a state
+            'record message': 'Record message', # "Stop recording and send" doesnt correspond to a state
             'replay message': 'window',
             'play message': f'Message from channel {self.chosen_channel}',
             'play action': 'window', # no window?
