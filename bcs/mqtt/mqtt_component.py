@@ -39,7 +39,7 @@ class MQTT_Client:
         self.message_count = 0
         self.stm = None
         self.channel_list = []
-        self.message_storage = "./messages/"
+        self.message_storage = "../messages/"
         if not os.path.exists(os.path.dirname(self.message_storage)):
             try:
                 os.makedirs(os.path.dirname(self.message_storage))
@@ -49,9 +49,9 @@ class MQTT_Client:
 
     def create_channel_list(self):
         # sending hard coded channel list to simulate server component
-        payload = "Test,Erlend,Group 1,Group 2"
+        payload = "Group 1,Group 2,Group 3,Group 4,Group 5,vetle,santhosh,erlend,martin,sindre,mina"
         try:
-            self.client.publish(self.prefix + "channel_list", payload) # TODO make deferred
+            self.client.publish(self.prefix + "channel_list", payload)  # TODO make deferred
         except Exception as e:
             print(e)
 
@@ -61,30 +61,34 @@ class MQTT_Client:
         #self.client.subscribe(self.prefix + "channel_list")
 
     def on_message(self, client, userdata, msg):
-        #check if channel is channel_list channel
+        # check if channel is channel_list channel
         print("on_message(): topic: {}".format(msg.topic))
         topic = msg.topic.split("/")[-1]
         if topic == "channel_list":
-            self.channel_list = str(msg.payload).split(",")
+            self.channel_list = str(msg.payload.decode("utf-8")).split(",")
         else:
             self.message_count += 1
 
-            # Adding ".wav" for all messages# not from "channel_list"
-            file_extension = ".wav"# if topic != "channel_list" else ""
-            file_object = open(self.message_storage + topic +
-                               str(self.message_count) + file_extension, "wb")
+            file_extension = ".wav"
+            file_path = self.message_storage + topic + "-" + str(self.message_count) + file_extension
+            file_object = open(file_path, "wb")
+            print("saving to" + str(file_object))
             file_object.write(msg.payload)
             file_object.close()
-            message = Message(topic, self.message_count,
-                              self.message_storage + topic + str(self.message_count) + file_extension)
+            # message = Message(topic, self.message_count,
+            #                  self.message_storage + topic + str(self.message_count) + file_extension)
+            message = Message(topic, self.message_count, file_path)
             self.stm.add_message(message)
+
+    def unsubscribe(self, channel_name):
+        self.client.unsubscribe(self.prefix + channel_name)
 
     def subscribe(self, channel_name):
         self.client.subscribe(self.prefix + channel_name)
 
     def send_message(self, channel_name, payload):
         try:
-            self.client.publish(self.prefix + channel_name, payload)
+            self.client.publish(self.prefix + channel_name, payload+'-'+self.user_name, qos=0)
         except Exception as e:
             print(e)
 
@@ -95,19 +99,18 @@ class MQTT_Client:
         byteArray = bytearray(audiostring)
 
         try:
-            self.client.publish(self.prefix + channel_name, byteArray)
+            self.client.publish(self.prefix + channel_name, byteArray, qos=0)
         except Exception as e:
             print(e)
 
     def start(self, broker, port):
         print("Connecting to {}:{}".format(broker, port))
         self.client.connect(broker, port)
-
-        self.client.subscribe(self.prefix + self.user_name)
-        self.client.subscribe(self.prefix + "channel_list") #Subscribe to channel that sends all channel information
+        print(self.user_name)
+        self.client.subscribe(self.prefix + str(self.user_name))
+        self.client.subscribe(self.prefix + "channel_list")  # Subscribe to channel that sends all channel information
 
         try:
-            # line below should not have the () after the function!
             thread = Thread(target=self.client.loop_forever)
             thread.start()
         except KeyboardInterrupt:
@@ -117,5 +120,5 @@ class MQTT_Client:
     def get_channels(self):
         return self.channel_list
 
-    def setStm(self,stm):
-        self.stm=stm
+    def setStm(self, stm):
+        self.stm = stm

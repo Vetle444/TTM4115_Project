@@ -27,20 +27,24 @@ class Recorder:
         self.filename = "recorded_message.wav"
         self.p = pyaudio.PyAudio()
         self.mqtt=mqtt
-        self.channel_name=None
+        self.channel_names=[]
 
         # Make recorder state machine
-        t0 = {'source': 'initial', 'target': 'ready'}
-        t1 = {'trigger': 'start', 'source': 'ready', 'target': 'recording'}
+        t0 = {'source': 'initial', 'target': 'record_ready'}
+        t1 = {'trigger': 'start', 'source': 'record_ready', 'target': 'recording'}
         t2 = {'trigger': 'done', 'source': 'recording', 'target': 'processing'}
-        t3 = {'trigger': 'done', 'source': 'processing', 'target': 'ready'}
+        t3 = {'trigger': 'done', 'source': 'processing', 'target': 'record_ready'}
 
+
+# TODO no ready state, stuck after processing: FIXED??
+
+        s_ready = {'name': 'record_ready'}
         s_recording = {'name': 'recording', 'do': 'record()', "stop": "stop()"}
         s_processing = {'name': 'processing', 'do': 'process()'}
 
-        stm = Machine(name='stm', transitions=[t0, t1, t2, t3], states=[
-            s_recording, s_processing], obj=self)
-        self.stm = stm
+        record_stm = Machine(name='record_stm', transitions=[t0, t1, t2, t3], states=[
+            s_recording, s_processing, s_ready], obj=self)
+        self.record_stm = record_stm
 
         self.driver=None
 
@@ -58,11 +62,11 @@ class Recorder:
             data = stream.read(self.chunk)
             self.frames.append(data)
         print("recording done")
+
         # Stop and close the stream
         stream.stop_stream()
         stream.close()
-        # Terminate the PortAudio interface
-        self.p.terminate()
+
         print("stream closed")
 
     def stop(self):
@@ -79,19 +83,20 @@ class Recorder:
         wf.writeframes(b''.join(self.frames))
         wf.close()
         print("processing done")
-        
-        self.mqtt.send_file(self.channel_name, self.filename)
+        for channel in self.channel_names:
+            self.mqtt.send_file(channel, self.filename)
 
     #def stop_stm(self):
     #    self.driver.stop()
     #    print("driver stopped")
 
-    def start_recording(self):
-        self.driver.send('start', 'stm')
+    def start_recording(self, channel_name):
+        self.channel_names = channel_name
+        self.driver.send('start', 'record_stm')
 
-    def stop_recording(self, channel_name):
-        self.channel_name = channel_name
-        self.driver.send('stop', 'stm')
+    def stop_recording(self):
+        self.driver.send('stop', 'record_stm')
+
 
     def setDriver(self,driver):
         self.driver=driver
@@ -101,9 +106,9 @@ class Recorder:
 """
 recorder = Recorder()
 recorder.create_stm()
-recorder.start_recording()
+recorder.start_recording([])8
 time.sleep(30)
-recorder.stop_recording("channelName")
+recorder.stop_recording()
 time.sleep(2)
 # recorder.stop_stm()
 """

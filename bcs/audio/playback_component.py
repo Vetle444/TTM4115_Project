@@ -76,10 +76,11 @@ class Player:
         self.driver.send('done', 'stm')
         print("stop playback")
 
-
+'''
 #Example
 player = Player()
 player.create_stm()
 player.start_playback("../recorded_message.wav")
 time.sleep(2)
 player.stop_playback()
+'''
