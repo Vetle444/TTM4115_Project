@@ -183,13 +183,21 @@ class StateMachine_Component:
 
         t26 = {'trigger': 'cancel',
                'source': 'replay action',
+<<<<<<< HEAD
                'target': 'choose recipient listen'
+=======
+               'target': 'waiting for command'
+>>>>>>> main
                }
         t27 = {'trigger': 'finished',
                'source': 'play message',
                'target': 'play action'
                }
+<<<<<<< HEAD
         t28 = {'trigger': 'finished',
+=======
+        t28={'trigger': 'done',
+>>>>>>> main
                'source': 'replay message',
                'target': 'replay action'
                }
@@ -230,6 +238,10 @@ class StateMachine_Component:
 
         play_action = {'name': 'play action',
                        'entry': 'ui_show_play_action'}
+        # Change 4: We pass the set of states to the state machine
+        stm = Machine(name='stm_bcs', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28], obj=ui,
+                          states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
+        self.stm_bcs=stm
 
         replay_action = {'name': 'replay action',
                          'entry': 'ui_show_replay_action'}
