@@ -58,7 +58,7 @@ class MQTT_Client:
     def on_connect(self, client, userdata, flags, rc):
         print("on_connect(): {}".format(mqtt.connack_string(rc)))
         #self.client.subscribe(self.prefix + self.user_name)
-        # self.client.subscribe(self.prefix + "channel_list")
+        #self.client.subscribe(self.prefix + "channel_list")
 
     def on_message(self, client, userdata, msg):
         # check if channel is channel_list channel
