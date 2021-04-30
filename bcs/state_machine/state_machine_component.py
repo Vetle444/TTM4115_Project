@@ -203,7 +203,7 @@ class StateMachine_Component:
                    'entry': 'start_timer("t", 3000); ui_show_standby'}
 
         waiting_for_command = {'name': 'waiting for command',
-                               'entry': 'start_timer("timeout", 3000); ui_show_waitingForCommand'}
+                               'entry': 'start_timer("timeout", 5000); ui_show_waitingForCommand'}
 
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'ui_show_toggleGeneralChannels'}
@@ -282,7 +282,8 @@ class StateMachine_Component:
         """
 
         for channel in self.mqtt.channel_list:
-            self.mqtt.unsubscribe(channel)
+            if channel != self.mqtt.user_name:
+                self.mqtt.unsubscribe(channel)
         for channel in self.subscribed:
             self.mqtt.subscribe(channel)
 
