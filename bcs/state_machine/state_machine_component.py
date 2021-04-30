@@ -294,9 +294,11 @@ class StateMachine_Component:
         self.messages[message.channel_name].append(message)
 
     def play_message_from_queue(self):
+        self.recipientList=[self.new_msg_queue[0].channel_name]
         self.playMessage(self.new_msg_queue[0].play())
 
     def replay_message(self):
+        self.recipientList = [self.chosen_message.channel_name]
         self.playMessage(self.chosen_message.play())
 
     """ deprecated
