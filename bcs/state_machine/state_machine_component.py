@@ -75,7 +75,8 @@ class StateMachine_Component:
               'target': 'recording message',
               'effect': "recorded_message_too_long"}
         '''
-
+        """
+        """
         t8 = {'trigger': 'answer',
               'source': 'replay action',
               'target': 'recording message'
