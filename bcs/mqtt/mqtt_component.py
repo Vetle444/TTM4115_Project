@@ -57,8 +57,6 @@ class MQTT_Client:
 
     def on_connect(self, client, userdata, flags, rc):
         print("on_connect(): {}".format(mqtt.connack_string(rc)))
-        #self.client.subscribe(self.prefix + self.user_name)
-        #self.client.subscribe(self.prefix + "channel_list")
 
     def on_message(self, client, userdata, msg):
         # check if channel is channel_list channel
@@ -75,8 +73,6 @@ class MQTT_Client:
             print("saving to" + str(file_object))
             file_object.write(msg.payload)
             file_object.close()
-            # message = Message(topic, self.message_count,
-            #                  self.message_storage + topic + str(self.message_count) + file_extension)
             message = Message(topic, self.message_count, file_path)
             self.stm.add_message(message)
 

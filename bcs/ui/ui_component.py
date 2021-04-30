@@ -18,17 +18,14 @@ class UI_Component:
         # All the incoming messages in the selected channel (type list of msg)
         # self.messagesInChannel = []
         # Title has the channel name in it, hence dynamic title, so cannot fetch sub window by name (type string)
-        # self.selectedChannel = None
 
         self.app = gui()
 
         self.subwindow_standby_create()
         self.subwindow_mainmenu_create()
-        # self.subwindow_toggleChannel_create()
-        # self.subwindow_record_create()
+
         self.subwindow_stopRecording_create()
-        # self.CreatePlaybackMessageWindow()
-        # self.CreateNewMessagesPerMessageWindow()
+
 
         self.current_subwindow = "Standby"
         self.app.go(startWindow="Standby")
@@ -96,7 +93,6 @@ class UI_Component:
         self.app.stopSubWindow()
         self.app.showSubWindow("Select receiving channels")
 
-        # return None
 
     def subwindow_chooseRecipient_create(self):
         self.app.startSubWindow("Choose recipient")
@@ -140,7 +136,7 @@ class UI_Component:
         '''
         print("CreateNewMessagesPerChannelWindow is called")
         # TODO: Fetch channels that have messages (set self.channelsWithMessages)
-        # self.channelsWithMessages = self.stm_component.messages
+
         self.app.startSubWindow("New messages per channel")
 
         self.app.startLabelFrame("Select channel", 0, 0)
@@ -164,7 +160,6 @@ class UI_Component:
         '''
         # TODO: Fetch incoming message(s) from selected channel
 
-        # self.selectedChannel = channel
         self.app.startSubWindow("Messages from channel")
 
         self.app.startLabelFrame("Select message", 0, 0)
@@ -259,17 +254,6 @@ class UI_Component:
 
         self.stm_component.stm.send("finished")
 
-    '''
-    def generate_channel_with_messages(self):
-        # ONLY FOR DEBUGGING
-        d = {}
-        for i in range(5):
-            d["kanal {}".format(str(i))] = []
-            for j in range(5):
-                    str(i)), "id_k{}_m{}".format(i, j), "some_url")
-                d["kanal {}".format(str(i))].append(m)
-        return d
-    '''
 
     def update(self, sub_window, message=None, channel=None):
         print(f"UI tries to switch to subwindow {sub_window}")
@@ -305,14 +289,3 @@ class UI_Component:
 
     def cancel(self):
         self.stm_component.stm.send("cancel")
-
-
-'''
-channels = []
-for i in range(50):
-    channels.append("Test" + str(i))
-'''
-'''
-test = UI_Component()
-test.start()
-'''

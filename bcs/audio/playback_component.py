@@ -8,11 +8,7 @@ import pyaudio
 import wave
 
 """
-How to use:
-Initiate Player class
-Call create stm function
-Call start playback
-Call stop playback
+THIS IS NOT USED ANYMORE
 """
 
         

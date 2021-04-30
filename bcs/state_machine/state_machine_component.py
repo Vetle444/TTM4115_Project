@@ -68,25 +68,11 @@ class StateMachine_Component:
               'effect': 'stop_recording'
 
               }
-              
-        ''' deprecated
-        t7 = {'trigger': 't',  # Starts timer on entry recording message if reaches 60s message is to long
-              'source': 'recording message',
-              'target': 'recording message',
-              'effect': "recorded_message_too_long"}
-        '''
-        """
-        """
+
         t8 = {'trigger': 'answer',
               'source': 'replay action',
               'target': 'recording message'
               }
-        """
-        t9 = {'trigger': 'skip',
-              'source': 'replay action',
-              'function': 'replay_next_function'
-              }
-        """
 
         t10 = {'trigger': 'cancel',
                'source': 'play action',
@@ -102,13 +88,6 @@ class StateMachine_Component:
                'source': 'choose recipient listen',
                'target': 'waiting for command'
                }
-        """ deprecated
-        t13 = {'trigger': 'invalid',
-               'source': 'choose recipient listen',
-               'target': 'choose recipient listen'
-               # read here
-               }
-        """
 
 
         t14 = {'trigger': 'finished',
@@ -126,12 +105,6 @@ class StateMachine_Component:
                'target': 'replay message'
                }
 
-        """  deprecated
-        t15 = {'trigger': 'choose_mode',
-               'source': 'waiting for command',
-               'target': 'choose state'
-               }
-        """
 
         t16 = {'trigger': 'send',
                'source': 'waiting for command',
@@ -142,12 +115,7 @@ class StateMachine_Component:
                'source': 'choose recipient send',
                'target': 'waiting for command'
                }
-        """ deprecated
-        t18 = {'trigger': 'invalid',
-               'source': 'choose recipient send',
-               'target': 'choose recipient send'
-               }
-        """
+
         t19 = {'trigger': 'finished',
                'source': 'choose recipient send',
                'target': 'recording message'
@@ -168,18 +136,7 @@ class StateMachine_Component:
                'effect': 'toggle_channel_subscribe',
                'target': 'waiting for command'
                }
-        """ deprecated
-        t23 = {'trigger': 'cancel',
-               'source': 'choose state',
-               'target': 'waiting for command'
-               }
-        """
-        """ deprecated
-        t24 = {'trigger': 'chosen',
-               'source': 'choose state',
-               'target': 'waiting for command'
-               }
-        """
+
 
         t26 = {'trigger': 'cancel',
                'source': 'replay action',
@@ -208,10 +165,6 @@ class StateMachine_Component:
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'ui_show_toggleGeneralChannels'}
 
-        """
-        choose_state = {'name': 'choose state',
-                        'entry': 'ui_show_chooseState'}
-        """
 
         choose_recipient_listen = {'name': 'choose recipient listen',
                                    'entry': 'ui_show_recipient_listen'}
@@ -253,33 +206,12 @@ class StateMachine_Component:
         else:
             return 'standby'
 
-    """
-    def compound_transition_replay_end(self):
-        if self.ID < self.ui.new_msg_queue[-1]:
-            self.ID += 1
-            return "replay message"
-        else:
-            print("All messages played")  # read
-            return "waiting for command"
-    """
     def delete_first_msg_queue(self):
         del self.new_msg_queue[0]
 
-    """ deprecated
-    def recorded_message_too_long(self):
-        print("Message too long, try again")  # read
-    """
 
     def toggle_channel_subscribe(self):
         # get channels from the UI
-        """
-        if channel_name == "invalid":
-            print("A channel with this name does not exist!")
-            return "toggle general channel"
-        else:
-            self.mqtt.subscribe(self.recipient)
-            return "waiting for command"
-        """
 
         for channel in self.mqtt.channel_list:
             if channel != self.mqtt.user_name:
@@ -302,18 +234,6 @@ class StateMachine_Component:
     def replay_message(self):
         self.recipientList = [self.chosen_message.channel_name]
         self.playMessage(self.chosen_message.play())
-
-    """ deprecated
-        def choose_channel_send(self):
-        # ui chose channel returns a list of channels,
-        self.recipient = self.ui.choose_channel(self.subscribed)
-    """
-
-    """ deprecated
-        def choose_channel_replay(self):
-        # ui chose channel returns a list of channels, used for replay
-        self.recipient = self.ui.choose_channel()
-    """
 
     def getMessages(self):
         return self.messages
