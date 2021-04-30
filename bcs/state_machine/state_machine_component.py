@@ -101,12 +101,14 @@ class StateMachine_Component:
                'source': 'choose recipient listen',
                'target': 'waiting for command'
                }
-
+        """ deprecated
         t13 = {'trigger': 'invalid',
                'source': 'choose recipient listen',
                'target': 'choose recipient listen'
                # read here
                }
+        """
+
 
         t14 = {'trigger': 'finished',
                'source': 'choose recipient listen',
@@ -200,7 +202,7 @@ class StateMachine_Component:
                    'entry': 'start_timer("t", 3000); ui_show_standby'}
 
         waiting_for_command = {'name': 'waiting for command',
-                               'entry': 'start_timer("timeout", 15000); ui_show_waitingForCommand'}
+                               'entry': 'start_timer("timeout", 3000); ui_show_waitingForCommand'}
 
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'ui_show_toggleGeneralChannels'}
@@ -235,7 +237,7 @@ class StateMachine_Component:
                          'entry': 'ui_show_choose_message_listen'}
 
         # Change 4: We pass the set of states to the state machine
-        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11, t12, t13, t14, t15, t16, t17, t19, t20, t21, t22, t26, t27, t28, t29], obj=self, states=[
+        self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11, t12, t14, t15, t16, t17, t19, t20, t21, t22, t26, t27, t28, t29], obj=self, states=[
                            standby, waiting_for_command, toggle_general_channel, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action, choose_message_listen])
 
     def compound_transition_msg_queue(self):
