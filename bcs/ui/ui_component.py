@@ -171,9 +171,10 @@ class UI_Component:
         self.app.startScrollPane("MessagesPane")
 
         print("displying all messages from channel{}".format(self.stm_component.chosen_channel))
-        for msg in self.stm_component.messages[self.stm_component.chosen_channel]:
-            self.app.addNamedButton("Message " + str(msg.ID), str(msg.ID) + "_message" + str(msg.ID),
-                                    lambda: self.button_selectMessage_newMsgMessages(msg))
+        for message in self.stm_component.messages[self.stm_component.chosen_channel]:
+            print(message.ID, message.audio_file_path)
+            self.app.addNamedButton("Message " + str(message.ID), message,
+                                    lambda message=message: self.button_selectMessage_newMsgMessages(message))
 
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
@@ -224,7 +225,7 @@ class UI_Component:
 
     def button_selectMessage_newMsgMessages(self, message):
         print("onViewMessage called")
-        print(message)
+        print(message.audio_file_path)
         self.stm_component.chosen_message = message
         self.stm_component.stm.send('finished')
 
