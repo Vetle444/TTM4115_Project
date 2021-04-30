@@ -179,10 +179,9 @@ class UI_Component:
         self.app.stopScrollPane()
         self.app.stopLabelFrame()
 
-        '''
-        self.app.addNamedButton("Cancel", "Cancel_Messages2", Lambda: self.cancel(), len(
+        self.app.addNamedButton("Cancel", "Cancel_Messages2", lambda: self.cancel(), len(
             self.stm_component.messages[self.stm_component.chosen_channel]), 1)
-        '''
+
 
         self.app.stopSubWindow()
         self.app.showSubWindow("Messages from channel")
