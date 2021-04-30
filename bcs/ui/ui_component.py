@@ -145,7 +145,7 @@ class UI_Component:
 
         self.app.startLabelFrame("Select channel", 0, 0)
         self.app.startScrollPane("ChannelMessagesPane")
-
+        print(self.stm_component.messages)
         for channel in self.stm_component.messages.keys():
             self.app.addNamedButton(channel, channel,
                                     lambda channel=channel: self.onViewMessagesWithNewMessages(channel))
