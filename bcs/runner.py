@@ -22,7 +22,7 @@ for c in range(5):
 """
 # Create components
 ui = UI_Component()
-mqtt_client = MQTT_Client("santhosh")
+mqtt_client = MQTT_Client("erlend")
 broker, port = "mqtt.item.ntnu.no", 1883
 recorder = Recorder(mqtt_client)
 stm_component = StateMachine_Component()

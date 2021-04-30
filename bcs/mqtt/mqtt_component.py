@@ -106,8 +106,8 @@ class MQTT_Client:
     def start(self, broker, port):
         print("Connecting to {}:{}".format(broker, port))
         self.client.connect(broker, port)
-
-        self.client.subscribe(self.prefix + self.user_name)
+        print(self.user_name)
+        self.client.subscribe(self.prefix + str(self.user_name))
         self.client.subscribe(self.prefix + "channel_list")  # Subscribe to channel that sends all channel information
 
         try:
