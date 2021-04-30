@@ -209,7 +209,7 @@ class UI_Component:
 
         self.app.addNamedButton(
             "Cancel", "Cancel_replayControls", lambda: self.cancel(), 1, 1)
-        if self.stm_component.mqtt.user_name != self.stm_component.chosen_channel:
+        if self.stm_component.mqtt.user_name.lower() != self.stm_component.chosen_channel.lower():
             self.app.addButton(
                 "Answer", lambda: self.stm_component.stm.send("answer"), 1, 0)
 
