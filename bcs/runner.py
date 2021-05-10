@@ -34,10 +34,10 @@ stm_component.setMQTT(mqtt_client)
 stm_component.setRecorder(recorder)
 stm_component.setUI(ui)
 
-#Example messages dictionary
+# Example messages dictionary
 #stm_component.messages = debug_channels
 
-#Example new messages list
+# Example new messages list
 #stm_components.new_msg_queue = debug_msg_queue
 
 ui.stm_component = stm_component
@@ -51,8 +51,8 @@ print("runner: Setup complete, starting system...")
 driver._logger.setLevel(logging.DEBUG)
 mqtt_client.start(broker, port)
 mqtt_client.create_channel_list()
-#ui.start()
+# ui.start()
 #x = threading.Thread(target=ui.start)
 driver.start()
 ui.start()
-#x.start()
+# x.start()

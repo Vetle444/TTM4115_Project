@@ -15,25 +15,27 @@ class StateMachine_Component:
         self.new_msg_queue = []  # play, List of new messages.
         self.messages = {}  # replay, Dictionary contains all saved messages
         self.chosen_message = None
-        self.chosen_channel=None
+        self.chosen_channel = None
         self.recipientList = []
         # Default operation_mode is "Listen-mode". Other options are "Loudness-mode" and "Do not disturb-mode"
         self.operation_mode = "Listen-mode"
         self.subscribed = []
         self.driver = None
         self.state_to_window = {
-            #'state': 'window',
+            # 'state': 'window',
             'standby': 'Standby',
             'waiting for command': 'Waiting for command',
             'toggle general channel': 'Select receiving channels',
             'choose state': 'window',
-            'choose recipient listen': 'New messages per channel', #"Messages from channel " + self.selectedChannel doesnt correspond to a state
+            # "Messages from channel " + self.selectedChannel doesnt correspond to a state
+            'choose recipient listen': 'New messages per channel',
             'choose recipient send': 'Choose recipient',
-            'record message': 'Record message', # "Stop recording and send" doesnt correspond to a state
+            # "Stop recording and send" doesnt correspond to a state
+            'record message': 'Record message',
             'replay message': 'window',
             'play message': f'Message from channel {self.chosen_channel}',
-            'play action': 'window', # no window?
-            'replay action': 'window', # no window?
+            'play action': 'window',  # no window?
+            'replay action': 'window',  # no window?
         }
 
         t0 = {'source': 'initial',
@@ -68,7 +70,7 @@ class StateMachine_Component:
               'effect': 'stop_recording'
 
               }
-              
+
         ''' deprecated
         t7 = {'trigger': 't',  # Starts timer on entry recording message if reaches 60s message is to long
               'source': 'recording message',
@@ -109,7 +111,6 @@ class StateMachine_Component:
                # read here
                }
         """
-
 
         t14 = {'trigger': 'finished',
                'source': 'choose recipient listen',
@@ -183,21 +184,23 @@ class StateMachine_Component:
 
         t26 = {'trigger': 'cancel',
                'source': 'replay action',
-<<<<<<< HEAD
+<< << << < HEAD
                'target': 'choose recipient listen'
-=======
+== == == =
                'target': 'waiting for command'
->>>>>>> main
+>> >>>> > main
                }
         t27 = {'trigger': 'finished',
                'source': 'play message',
                'target': 'play action'
                }
-<<<<<<< HEAD
+
+
+<< << << < HEAD
         t28 = {'trigger': 'finished',
-=======
-        t28={'trigger': 'done',
->>>>>>> main
+== == == =
+        t28 = {'trigger': 'done',
+>>>>>> > main
                'source': 'replay message',
                'target': 'replay action'
                }
@@ -241,7 +244,7 @@ class StateMachine_Component:
         # Change 4: We pass the set of states to the state machine
         stm = Machine(name='stm_bcs', transitions=[t0, t1, t2, t3, t4, t5, t6, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28], obj=ui,
                           states=[standby, waiting_for_command, toggle_general_channel, choose_state, choose_recipient_listen, choose_recipient_send, record_message, replay_message, play_message, play_action, replay_action])
-        self.stm_bcs=stm
+        self.stm_bcs = stm
 
         replay_action = {'name': 'replay action',
                          'entry': 'ui_show_replay_action'}
@@ -308,7 +311,7 @@ class StateMachine_Component:
         self.messages[message.channel_name].append(message)
 
     def play_message_from_queue(self):
-        self.recipientList=[self.new_msg_queue[0].channel_name]
+        self.recipientList = [self.new_msg_queue[0].channel_name]
         self.playMessage(self.new_msg_queue[0].play())
 
     def replay_message(self):
@@ -361,12 +364,13 @@ class StateMachine_Component:
 
     def update_ui(self):
         if self.stm.state != 'initial':
-            print(f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
+            print(
+                f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
             self.ui.update(self.state_to_window[self.stm.state])
         # DOESNT WORK because stm.state is only updated after entry actions.. :(
 
     def ui_show_standby(self):
-        #self.ui.start()
+        # self.ui.start()
         self.ui.update('Standby')
         print("In standby")
 
@@ -385,7 +389,7 @@ class StateMachine_Component:
 
     def ui_show_playAction(self):
         pass
-        #self.ui.update('window') # TODO does this have a window? tod   o
+        # self.ui.update('window') # TODO does this have a window? tod   o
 
     def ui_show_chooseRecipientSend(self):
         self.ui.update('Choose recipient')
@@ -428,6 +432,3 @@ class StateMachine_Component:
 
     def stop_recording(self):
         self.recorder.stop_recording()
-
-
-

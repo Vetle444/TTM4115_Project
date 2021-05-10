@@ -15,17 +15,17 @@ Call start playback
 Call stop playback
 """
 
-        
+
 class Player:
     def __init__(self):
 
-        self.filename=None
+        self.filename = None
 
     def play(self, filename):
         # Set chunk size of 1024 samples per data frame
-        chunk = 1024  
+        chunk = 1024
 
-        # Open the sound file 
+        # Open the sound file
         wf = wave.open(filename, 'rb')
 
         # Create an interface to PortAudio
@@ -33,10 +33,10 @@ class Player:
 
         # Open a .Stream object to write the WAV file to
         # 'output = True' indicates that the sound will be played rather than recorded
-        stream = p.open(format = p.get_format_from_width(wf.getsampwidth()),
-                        channels = wf.getnchannels(),
-                        rate = wf.getframerate(),
-                        output = True)
+        stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
+                        channels=wf.getnchannels(),
+                        rate=wf.getframerate(),
+                        output=True)
 
         # Read data in chunks
         data = wf.readframes(chunk)
@@ -45,11 +45,10 @@ class Player:
         while data:
             stream.write(data)
             data = wf.readframes(chunk)
-        print("ferdig") #Send done to other stm
+        print("ferdig")  # Send done to other stm
         # Close and terminate the stream
         stream.close()
         p.terminate()
-
 
     def create_stm(self):
         t0 = {'source': 'initial', 'target': 'ready'}
@@ -59,7 +58,8 @@ class Player:
         s_playing = {'name': 'playing', 'entry': 'play()'}
         s_ready = {'name': 'ready'}
 
-        stm = Machine(name='stm', transitions=[t0, t1, t2], states=[s_playing, s_ready], obj=player)
+        stm = Machine(name='stm', transitions=[t0, t1, t2], states=[
+                      s_playing, s_ready], obj=player)
         self.stm = stm
 
         self.driver = Driver()
@@ -68,13 +68,14 @@ class Player:
 
         print("driver started")
 
-    def start_playback(self,filename):
-        self.filename=filename
+    def start_playback(self, filename):
+        self.filename = filename
         self.driver.send('start', 'stm')
 
     def stop_playback(self):
         self.driver.send('done', 'stm')
         print("stop playback")
+
 
 '''
 #Example

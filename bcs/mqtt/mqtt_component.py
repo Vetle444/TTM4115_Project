@@ -51,7 +51,8 @@ class MQTT_Client:
         # sending hard coded channel list to simulate server component
         payload = "Group 1,Group 2,Group 3,Group 4,Group 5,vetle,santhosh,erlend,martin,sindre,mina"
         try:
-            self.client.publish(self.prefix + "channel_list", payload)  # TODO make deferred
+            self.client.publish(self.prefix + "channel_list",
+                                payload)  # TODO make deferred
         except Exception as e:
             print(e)
 
@@ -70,7 +71,8 @@ class MQTT_Client:
             self.message_count += 1
 
             file_extension = ".wav"
-            file_path = self.message_storage + topic + "-" + str(self.message_count) + file_extension
+            file_path = self.message_storage + topic + "-" + \
+                str(self.message_count) + file_extension
             file_object = open(file_path, "wb")
             print("saving to" + str(file_object))
             file_object.write(msg.payload)
@@ -88,7 +90,8 @@ class MQTT_Client:
 
     def send_message(self, channel_name, payload):
         try:
-            self.client.publish(self.prefix + channel_name, payload+'-'+self.user_name, qos=0)
+            self.client.publish(self.prefix + channel_name,
+                                payload+'-'+self.user_name, qos=0)
         except Exception as e:
             print(e)
 
@@ -108,7 +111,8 @@ class MQTT_Client:
         self.client.connect(broker, port)
         print(self.user_name)
         self.client.subscribe(self.prefix + str(self.user_name))
-        self.client.subscribe(self.prefix + "channel_list")  # Subscribe to channel that sends all channel information
+        # Subscribe to channel that sends all channel information
+        self.client.subscribe(self.prefix + "channel_list")
 
         try:
             thread = Thread(target=self.client.loop_forever)
