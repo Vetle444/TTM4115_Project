@@ -26,13 +26,13 @@ class UI_Component:
 
         self.subwindow_stopRecording_create()
 
-
         self.current_subwindow = "Standby"
         self.app.go(startWindow="Standby")
 
     def subwindow_standby_create(self):
         self.app.startSubWindow("Standby")
-        self.app.addButton('Wake device', lambda: self.stm_component.stm.send("wakeword"))
+        self.app.addButton(
+            'Wake device', lambda: self.stm_component.stm.send("wakeword"))
         self.app.stopSubWindow()
 
     def subwindow_mainmenu_create(self):
@@ -47,13 +47,17 @@ class UI_Component:
         self.app.addRadioButton("mode", "Listen-mode")
         self.app.addRadioButton("mode", "Do not disturb-mode")
         self.app.addRadioButton("mode", "Loudness-mode")
-        self.app.setRadioButtonChangeFunction("mode", self.button_chooseMode_mainmenu)
+        self.app.setRadioButtonChangeFunction(
+            "mode", self.button_chooseMode_mainmenu)
         self.app.stopLabelFrame()
 
         self.app.startLabelFrame("Select a command", 0, 1)
-        self.app.addButton('Toggle receiving channels', lambda: self.stm_component.stm.send("toggle_channel"))
-        self.app.addButton('Replay old messages', lambda: self.stm_component.stm.send("listen"))
-        self.app.addNamedButton('Record message', 'Record message_btn', lambda: self.stm_component.stm.send("send"))
+        self.app.addButton('Toggle receiving channels',
+                           lambda: self.stm_component.stm.send("toggle_channel"))
+        self.app.addButton('Replay old messages',
+                           lambda: self.stm_component.stm.send("listen"))
+        self.app.addNamedButton(
+            'Record message', 'Record message_btn', lambda: self.stm_component.stm.send("send"))
         self.app.stopLabelFrame()
 
         self.app.stopSubWindow()
@@ -65,7 +69,8 @@ class UI_Component:
         '''
 
         channel_list = self.stm_component.mqtt.channel_list
-        channel_list = [channel for channel in channel_list if "group" in channel.lower()]
+        channel_list = [
+            channel for channel in channel_list if "group" in channel.lower()]
 
         print("USERNAME" + self.stm_component.mqtt.user_name.lower())
         self.app.startSubWindow("Select receiving channels")
@@ -79,7 +84,8 @@ class UI_Component:
                 self.app.addCheckBox(channel, i, 1)
             else:
                 self.app.addCheckBox(channel, i, 1)
-            self.app.setCheckBox(channel) if channel in self.stm_component.subscribed else None
+            self.app.setCheckBox(
+                channel) if channel in self.stm_component.subscribed else None
         self.app.stopFrame()
         self.app.stopScrollPane()
 
@@ -92,7 +98,6 @@ class UI_Component:
 
         self.app.stopSubWindow()
         self.app.showSubWindow("Select receiving channels")
-
 
     def subwindow_chooseRecipient_create(self):
         self.app.startSubWindow("Choose recipient")
@@ -165,7 +170,8 @@ class UI_Component:
         self.app.startLabelFrame("Select message", 0, 0)
         self.app.startScrollPane("MessagesPane")
 
-        print("displying all messages from channel{}".format(self.stm_component.chosen_channel))
+        print("displying all messages from channel{}".format(
+            self.stm_component.chosen_channel))
         for message in self.stm_component.messages[self.stm_component.chosen_channel]:
             print(message.ID, message.audio_file_path)
             self.app.addNamedButton("Message " + str(message.ID), message,
@@ -177,7 +183,6 @@ class UI_Component:
         self.app.addNamedButton("Cancel", "Cancel_Messages2", lambda: self.cancel(), len(
             self.stm_component.messages[self.stm_component.chosen_channel]), 1)
 
-
         self.app.stopSubWindow()
         self.app.showSubWindow("Messages from channel")
 
@@ -187,10 +192,12 @@ class UI_Component:
         '''
         Plays back a selected message
         '''
-        self.app.startSubWindow("Playing message")  # from channel {}".format(self.selectedChannel))
+        self.app.startSubWindow(
+            "Playing message")  # from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
 
-        self.app.addLabel('l1', f'Playing message from {self.stm_component.chosen_channel}')
+        self.app.addLabel(
+            'l1', f'Playing message from {self.stm_component.chosen_channel}')
         self.app.stopSubWindow()
         self.app.showSubWindow("Playing message")
 
@@ -198,7 +205,8 @@ class UI_Component:
         '''
         Plays back a selected message
         '''
-        self.app.startSubWindow("Replay controls")  # from channel {}".format(self.selectedChannel))
+        self.app.startSubWindow(
+            "Replay controls")  # from channel {}".format(self.selectedChannel))
         self.app.setSize(400, 200)
         self.app.startFrame("ReplayButtons", 1, 1)
 
@@ -254,13 +262,13 @@ class UI_Component:
 
         self.stm_component.stm.send("finished")
 
-
     def update(self, sub_window, message=None, channel=None):
         print(f"UI tries to switch to subwindow {sub_window}")
 
         try:
             if sub_window != self.current_subwindow:
-                print(f"updating window from {self.current_subwindow} to {sub_window}!")
+                print(
+                    f"updating window from {self.current_subwindow} to {sub_window}!")
                 if sub_window == 'Choose recipient':
                     self.subwindow_chooseRecipient_create()
                 elif sub_window == 'New messages per channel':

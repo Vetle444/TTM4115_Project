@@ -15,25 +15,27 @@ class StateMachine_Component:
         self.new_msg_queue = []  # play, List of new messages.
         self.messages = {}  # replay, Dictionary contains all saved messages
         self.chosen_message = None
-        self.chosen_channel=None
+        self.chosen_channel = None
         self.recipientList = []
         # Default operation_mode is "Listen-mode". Other options are "Loudness-mode" and "Do not disturb-mode"
         self.operation_mode = "Listen-mode"
         self.subscribed = []
         self.driver = None
         self.state_to_window = {
-            #'state': 'window',
+            # 'state': 'window',
             'standby': 'Standby',
             'waiting for command': 'Waiting for command',
             'toggle general channel': 'Select receiving channels',
             'choose state': 'window',
-            'choose recipient listen': 'New messages per channel', #"Messages from channel " + self.selectedChannel doesnt correspond to a state
+            # "Messages from channel " + self.selectedChannel doesnt correspond to a state
+            'choose recipient listen': 'New messages per channel',
             'choose recipient send': 'Choose recipient',
-            'record message': 'Record message', # "Stop recording and send" doesnt correspond to a state
+            # "Stop recording and send" doesnt correspond to a state
+            'record message': 'Record message',
             'replay message': 'window',
             'play message': f'Message from channel {self.chosen_channel}',
-            'play action': 'window', # no window?
-            'replay action': 'window', # no window?
+            'play action': 'window',  # no window?
+            'replay action': 'window',  # no window?
         }
 
         t0 = {'source': 'initial',
@@ -89,22 +91,20 @@ class StateMachine_Component:
                'target': 'waiting for command'
                }
 
-
         t14 = {'trigger': 'finished',
                'source': 'choose recipient listen',
                'target': 'choose message listen'
                }
 
         t7 = {'trigger': 'cancel',
-                'source': 'choose message listen',
-                'target': 'choose recipient listen'
-                }
+              'source': 'choose message listen',
+              'target': 'choose recipient listen'
+              }
 
         t15 = {'trigger': 'finished',
                'source': 'choose message listen',
                'target': 'replay message'
                }
-
 
         t16 = {'trigger': 'send',
                'source': 'waiting for command',
@@ -137,7 +137,6 @@ class StateMachine_Component:
                'target': 'waiting for command'
                }
 
-
         t26 = {'trigger': 'cancel',
                'source': 'replay action',
                'target': 'choose recipient listen'
@@ -152,8 +151,8 @@ class StateMachine_Component:
                }
 
         t29 = {'trigger': 'timeout',
-                'source': 'waiting for command',
-                'target': 'standby'}
+               'source': 'waiting for command',
+               'target': 'standby'}
 
         # the states:
         standby = {'name': 'standby',
@@ -164,7 +163,6 @@ class StateMachine_Component:
 
         toggle_general_channel = {'name': 'toggle general channel',
                                   'entry': 'ui_show_toggleGeneralChannels'}
-
 
         choose_recipient_listen = {'name': 'choose recipient listen',
                                    'entry': 'ui_show_recipient_listen'}
@@ -188,7 +186,7 @@ class StateMachine_Component:
                          'entry': 'ui_show_replay_action'}
 
         choose_message_listen = {'name': 'choose message listen',
-                         'entry': 'ui_show_choose_message_listen'}
+                                 'entry': 'ui_show_choose_message_listen'}
 
         # Change 4: We pass the set of states to the state machine
         self.stm = Machine(name='ui', transitions=[t0, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11, t12, t14, t15, t16, t17, t19, t20, t21, t22, t26, t27, t28, t29], obj=self, states=[
@@ -209,7 +207,6 @@ class StateMachine_Component:
     def delete_first_msg_queue(self):
         del self.new_msg_queue[0]
 
-
     def toggle_channel_subscribe(self):
         # get channels from the UI
 
@@ -228,7 +225,7 @@ class StateMachine_Component:
         self.messages[message.channel_name].append(message)
 
     def play_message_from_queue(self):
-        self.recipientList=[self.new_msg_queue[0].channel_name]
+        self.recipientList = [self.new_msg_queue[0].channel_name]
         self.playMessage(self.new_msg_queue[0].play())
 
     def replay_message(self):
@@ -269,12 +266,13 @@ class StateMachine_Component:
 
     def update_ui(self):
         if self.stm.state != 'initial':
-            print(f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
+            print(
+                f"STM asking UI to change subwindow to {self.state_to_window[self.stm.state]} because of state {self.stm.state}")
             self.ui.update(self.state_to_window[self.stm.state])
         # DOESNT WORK because stm.state is only updated after entry actions.. :(
 
     def ui_show_standby(self):
-        #self.ui.start()
+        # self.ui.start()
         self.ui.update('Standby')
         print("In standby")
 
@@ -293,7 +291,7 @@ class StateMachine_Component:
 
     def ui_show_playAction(self):
         pass
-        #self.ui.update('window') # TODO does this have a window? tod   o
+        # self.ui.update('window') # TODO does this have a window? tod   o
 
     def ui_show_chooseRecipientSend(self):
         self.ui.update('Choose recipient')
@@ -336,6 +334,3 @@ class StateMachine_Component:
 
     def stop_recording(self):
         self.recorder.stop_recording()
-
-
-

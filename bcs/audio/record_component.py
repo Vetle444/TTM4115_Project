@@ -26,8 +26,8 @@ class Recorder:
         self.fs = 44100  # Record at 44100 samples per second
         self.filename = "recorded_message.wav"
         self.p = pyaudio.PyAudio()
-        self.mqtt=mqtt
-        self.channel_names=[]
+        self.mqtt = mqtt
+        self.channel_names = []
 
         # Make recorder state machine
         t0 = {'source': 'initial', 'target': 'record_ready'}
@@ -46,7 +46,7 @@ class Recorder:
             s_recording, s_processing, s_ready], obj=self)
         self.record_stm = record_stm
 
-        self.driver=None
+        self.driver = None
 
     def record(self):
         print("recording")
@@ -86,7 +86,7 @@ class Recorder:
         for channel in self.channel_names:
             self.mqtt.send_file(channel, self.filename)
 
-    #def stop_stm(self):
+    # def stop_stm(self):
     #    self.driver.stop()
     #    print("driver stopped")
 
@@ -97,9 +97,8 @@ class Recorder:
     def stop_recording(self):
         self.driver.send('stop', 'record_stm')
 
-
-    def setDriver(self,driver):
-        self.driver=driver
+    def setDriver(self, driver):
+        self.driver = driver
 
 
 # Example code
